@@ -1,0 +1,11 @@
+<form action="" method="post">{% csrf_token %}
+	{{form.as_p}}
+	{% for fo in inlines %}
+		f
+    	{{ fo.as_p }}
+    	t
+    {% empty %}
+    empty
+    {% endfor %}
+    <input type="submit" value="Send message" />
+</form>
