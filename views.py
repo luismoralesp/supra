@@ -49,10 +49,10 @@ class SupraListView(ListView):
 	#end def
 
 	def render_to_response(self, context, **response_kwargs):
-		return super(SupraFormView, self).render_to_response(context, content_type="application/json", **response_kwargs)
-	#end def
-#end class
+	    return super(SupraListView, self).render_to_response(context, content_type="application/json", **response_kwargs)
+    #end def
 
+#end class
 
 class SupraFormView(FormView):
 	template_name = "supra/form.html"
