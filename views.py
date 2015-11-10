@@ -47,6 +47,10 @@ class SupraListView(ListView):
 		context['object_list'] = json.dumps(context['object_list'], cls=DjangoJSONEncoder)
 		return context
 	#end def
+
+	def render_to_response(self, context, **response_kwargs):
+		return super(SupraFormView, self).render_to_response(context, content_type="application/json", **response_kwargs)
+	#end def
 #end class
 
 
@@ -102,7 +106,8 @@ class SupraFormView(FormView):
 		for i in self.inlines:
 			errors.update(dict(i.errors))
 		#end for
-		return HttpResponse(json.dumps(errors), status=400, content_type="application/json")
+		return HttpResponse(json.dumps(errors), status=400, content_type="application/json", **response_kwargs"application/json")
+	#end def
 	#end def
 
 #end class
