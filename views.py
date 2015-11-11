@@ -17,25 +17,31 @@ class SupraListView(ListView):
 	template_name = "supra/json.html"
 	list_display = None
 	paginate_by = 1
+	search_fields = ['nombre']
 
 	def dispatch(self, request, *args, **kwargs):
-		self.kwargs['q'] = request.GET.get('q', '')
+		for field in self.search_fields:
+			q = request.GET.get(field, False)
+			if q:
+				self.kwargs[field] = q
+			#end if
+		#end for
 		return super(SupraListView, self).dispatch(request)
 	#end def
 
 	def get_queryset(self):
 		queryset = super(SupraListView, self).get_queryset()
-		if 'q' in self.kwargs:
-			serach = self.kwargs['q']
-			q = Q()
-			for column in self.list_filter:
+		q = Q()
+		for column in self.list_filter:
+			if column in self.kwargs:
+				search = self.kwargs[column]
 				kwargs = {
-					'{0}__{1}'.format(column, 'icontains'): serach, 
+					'{0}__{1}'.format(column, 'icontains'): search, 
 				}
-				q = Q(q | Q(**kwargs))
-			#end for
+				q = Q(q & Q(**kwargs))
+			#end if
 			queryset = queryset.filter(q)
-		#end if
+		#end for
 		if self.list_display:
 			return list(queryset.values(*self.list_display))
 		#end if
