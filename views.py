@@ -16,6 +16,7 @@ import json
 class SupraListView(ListView):
 	template_name = "supra/json.html"
 	list_display = None
+	paginate_by = 1
 
 	def dispatch(self, request, *args, **kwargs):
 		self.kwargs['q'] = request.GET.get('q', '')
@@ -44,13 +45,35 @@ class SupraListView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super(SupraListView, self).get_context_data(**kwargs)
 		context['num_rows'] = len(context['object_list'])
-		context['object_list'] = json.dumps(context['object_list'], cls=DjangoJSONEncoder)
+		context['object_list'] = context['object_list']
+		print context
 		return context
 	#end def
 
 	def render_to_response(self, context, **response_kwargs):
-	    return super(SupraListView, self).render_to_response(context, content_type="application/json", **response_kwargs)
-    #end def
+		#return super(SupraListView, self).render_to_response(context, **response_kwargs)
+		json_dict = {}
+		page_obj = context["page_obj"]
+		paginator = context["paginator"]
+		num_rows = context["num_rows"]
+		object_list = context["object_list"]
+		if page_obj:
+			if page_obj.has_previous():
+				json_dict["previous"] = page_obj.previous_page_number()
+			#end if
+			if page_obj.has_next():
+				json_dict["next"] = page_obj.next_page_number()
+			#endif
+		#end if
+		if paginator:
+			json_dict["count"] = paginator.count
+			json_dict["num_pages"] = paginator.num_pages
+			json_dict["page_range"] = paginator.page_range
+		#end if
+		json_dict["num_rows"] = num_rows
+		json_dict["object_list"] = object_list
+		return HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
+	#end def
 
 #end class
 
@@ -106,8 +129,7 @@ class SupraFormView(FormView):
 		for i in self.inlines:
 			errors.update(dict(i.errors))
 		#end for
-		return HttpResponse(json.dumps(errors), status=400, content_type="application/json", **response_kwargs"application/json")
-	#end def
+		return HttpResponse(json.dumps(errors), status=400, content_type="application/json", **response_kwargs)
 	#end def
 
 #end class
