@@ -17,7 +17,6 @@ class SupraListView(ListView):
 	template_name = "supra/json.html"
 	list_display = None
 	paginate_by = 1
-	search_fields = ['nombre']
 
 	def dispatch(self, request, *args, **kwargs):
 		for field in self.search_fields:
@@ -42,27 +41,30 @@ class SupraListView(ListView):
 			#end if
 			queryset = queryset.filter(q)
 		#end for
-		if self.list_display:
-			return list(queryset.values(*self.list_display))
-		#end if
-		return list(queryset.values())
+		return queryset
 	#end def
 
 	def get_context_data(self, **kwargs):
 		context = super(SupraListView, self).get_context_data(**kwargs)
-		context['num_rows'] = len(context['object_list'])
+		context['num_rows'] = context['object_list'].count()
 		context['object_list'] = context['object_list']
-		print context
 		return context
 	#end def
 
 	def render_to_response(self, context, **response_kwargs):
 		#return super(SupraListView, self).render_to_response(context, **response_kwargs)
 		json_dict = {}
+
+		queryset = context["object_list"]
+		if self.list_display:
+			object_list = list(queryset.values(*self.list_display))
+		else:
+			object_list = list(queryset.values())
+		#end if
+
 		page_obj = context["page_obj"]
 		paginator = context["paginator"]
 		num_rows = context["num_rows"]
-		object_list = context["object_list"]
 		if page_obj:
 			if page_obj.has_previous():
 				json_dict["previous"] = page_obj.previous_page_number()
