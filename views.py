@@ -3,7 +3,7 @@ from django.views.generic.edit import FormView
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import inlineformset_factory, modelformset_factory
 from django.http import HttpResponse
-from django.db.models import Q
+from django.db.models import Q, F
 import models
 import json
 
@@ -14,9 +14,8 @@ import json
 	@licence: creative commons
 """
 class SupraListView(ListView):
-	template_name = "supra/json.html"
 	list_display = None
-	paginate_by = 1
+	search_fields = []
 
 	def dispatch(self, request, *args, **kwargs):
 		for field in self.search_fields:
@@ -52,12 +51,14 @@ class SupraListView(ListView):
 	#end def
 
 	def render_to_response(self, context, **response_kwargs):
-		#return super(SupraListView, self).render_to_response(context, **response_kwargs)
 		json_dict = {}
 
 		queryset = context["object_list"]
 		if self.list_display:
-			object_list = list(queryset.values(*self.list_display))
+			renderers = dict((key, F(value)) for key, value in self.Renderer.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
+			queryset = queryset.annotate(**renderers)
+			queryset = queryset.values(*self.list_display)
+			object_list = list(queryset)
 		else:
 			object_list = list(queryset.values())
 		#end if
@@ -124,12 +125,12 @@ class SupraFormView(FormView):
 	def is_valid_inlines(self):
 		for inline in self.inlines:
 			i = inline()
-			form = i.get_form_class()
-			f = form(**self.get_form_kwargs())
-			if not f.is_valid():
-				self.invalided_inilines.append(f)
+			form_class = i.get_form_class()
+			form = form_class(**self.get_form_kwargs())
+			if not form.is_valid():
+				self.invalided_inilines.append(form)
 			#end if
-			self.validated_inilines.append(f)
+			self.validated_inilines.append(form)
 		#end for
 		if len(self.invalided_inilines) > 0:
 			return False
@@ -140,7 +141,7 @@ class SupraFormView(FormView):
 	def form_invalid(self, form):
 		errors = dict(form.errors)
 		for i in self.invalided_inilines:
-			errors['inlines'] = dict(i.errors)
+			errors['inlines'] = list(i.errors)
 		#end for
 		return HttpResponse(json.dumps(errors), status=400, content_type="application/json")
 	#end def
