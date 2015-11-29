@@ -87,6 +87,7 @@ class SupraFormView(FormView):
 	template_name = "supra/form.html"
 	inlines = []
 	validated_inilines = []
+	invalided_inilines = []
 
 	def form_valid(self, form):
 		instance = form.save()
@@ -99,19 +100,20 @@ class SupraFormView(FormView):
 
 	def get_context_data(self, **kwargs):
 		context = super(SupraFormView, self).get_context_data(**kwargs)
-		print context
 		context['inlines'] = []
 		for inline in self.inlines:
 			form_class = inline().get_form_class()
 			context['inlines'].append(form_class())
-		print context['inlines']
+		#end for
 		return context
 	#end def
 
 	def post(self, request, *args, **kwargs):
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
-		if form.is_valid() and self.is_valid_inlines():
+		is_valid_form = form.is_valid()
+		is_valid_inlines = self.is_valid_inlines()
+		if is_valid_form and is_valid_inlines:
 			return self.form_valid(form)
 		#end if
 		return self.form_invalid(form)
@@ -123,22 +125,26 @@ class SupraFormView(FormView):
 			form = i.get_form_class()
 			f = form(**self.get_form_kwargs())
 			if not f.is_valid():
-				return False
+				self.invalided_inilines.append(f)
 			#end if
 			self.validated_inilines.append(f)
 		#end for
+		if len(self.invalided_inilines) > 0:
+			return False
+		#end if
 		return True
 	#end for
 
 	def form_invalid(self, form):
 		errors = dict(form.errors)
-		for i in self.inlines:
-			errors.update(dict(i.errors))
+		for i in self.invalided_inilines:
+			errors['inlines'] = dict(i.errors)
 		#end for
-		return HttpResponse(json.dumps(errors), status=400, content_type="application/json", **response_kwargs)
+		return HttpResponse(json.dumps(errors), status=400, content_type="application/json")
 	#end def
 
 #end class
+
 
 class SupraInlineFormView(SupraFormView):
 	base_model = None
