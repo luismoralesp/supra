@@ -18,7 +18,7 @@ It's a simple paginater JSON service. It shows a searchable list of registers pa
 **Example**
 
 *models.py*
-```
+```python
 from django.db import models
 
 class MyModel(models.Model):
@@ -28,7 +28,7 @@ class MyModel(models.Model):
 #end class
 ```
 *views.py*
-```
+```python
 import supra
 import models
 
@@ -39,7 +39,7 @@ class MyModelListView(supra.SupraListView):
 #end class
 ```
 *urls.py*
-```
+```python
 from django.conf.urls import include, url
 import views
 
@@ -48,14 +48,14 @@ urlpatterns = [
 ]
 ```
 *Result*
-```
-[{"field1": "value1", "field2":"value2", "field3":"value3"}, ...]
+```json
+{"num_rows": 1, "object_list": [{"field1": "value1", "field2":"value2", "field3":"value3"}]}
 ```
 
 Also you can use *field__field* instead field name as *list_display* as for *search_fiels*.
 
 *views.py*
-```
+```python
 import supra
 import models
 
@@ -65,8 +65,8 @@ class MyModelListView(supra.SupraListView):
 #end class
 ```
 *Result*
-```
-[{"field1__subfield": "subvalue", "field2":"value2"}, ...]
+```json
+{"num_rows": 1, "object_list": [{"field1__subfield": "subvalue", "field2":"value2"}]}
 ```
 
 if you don't want to show JSON keys like *field__subfield*, you can use **Renderer** sub class.
@@ -76,7 +76,7 @@ if you don't want to show JSON keys like *field__subfield*, you can use **Render
 Sub class Renderer  let you use friendly names for you JSON keys instead *field__subfield*.
 
 *views.py*
-```
+```python
 import supra
 import models
 
@@ -89,8 +89,8 @@ class MyModelListView(supra.SupraListView):
 #end class
 ```
 *Result*
-```
-[{"friendly": "subvalue", "field2":"value2"}, ...]
+```json
+{"num_rows": 1, "object_list": [{"friendly": "subvalue", "field2":"value2"}]}
 ```
 ###SupraFormView###
 It's a class based in the native django FormView class, but modified for use JSON as error list response instead a HTML template.
@@ -103,7 +103,7 @@ It's a class based in the native django FormView class, but modified for use JSO
 **Example**
 
 *views.py*
-```
+```python
 class MyModelFormView(supra.SupraFormView):
 	model = models.MyModel
 	form_class = forms.MyModelForm
@@ -111,14 +111,14 @@ class MyModelFormView(supra.SupraFormView):
 #end class
 ```
 *MyModelTemplate.html*
-```
+```html
 <form action="" method="post">{% csrf_token %}
     {{form.as_p}}
     <input type="submit" value="Send message" />
 </form>
 ```
 on error will show a response like
-```
+```json
 {"field1":["This field is required."]}
 ```
 ##SupraInlineFormView##
@@ -131,7 +131,7 @@ on error will show a response like
 
 
 *models.py*
-```
+```python
 from django.db import models
 
 class MyModel(models.Model):
@@ -146,7 +146,7 @@ class MyInlineModel(models.Model):
 #end class
 ```
 *views.py*
-```
+```python
 class MyInlineModelFormView(supra.SupraInlineFormView):
 	base_model = models.MyModel
 	inline_model = models.MyInlineModel
@@ -161,7 +161,7 @@ class MyModelFormView(supra.SupraFormView):
 #end class
 ```
 *MyModelTemplate.html*
-```
+```html
 <form action="" method="post">{% csrf_token %}
     {{form.as_p}}
     {% for fo in inlines %}
@@ -170,5 +170,8 @@ class MyModelFormView(supra.SupraFormView):
     <input type="submit" value="Send message" />
 </form>
 ```
-
+on error will show a response like
+```json
+{"field1":["This field is required."], "inlines":[{"inlinefield": "This field is required."}]}
+```
 That's all for now.
