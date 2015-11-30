@@ -1,19 +1,19 @@
 # supra
 
-It's an easy JSON services generator, using the native django ListView as base.
+It's an easy JSON service generator, using the native django ListView class as base.
 
 ##Install##
-  not yet, just copy and paste
+  not quite yet, just copy and paste for now.
 
 ##Use##
 
 ###SupraListView###
-It's a simple paginater JSON service. It shown a searchable list of registers paginated by an indicated number.
+It's a simple paginater JSON service. It shows a searchable list of registers paginated by an indicated number.
 
 **Fields**
-  - *model:* Spesify the model which will be shown, **it is mandatory**.
-  - *list_display:* Spesify the field list to show of this model.
-  - *search_fields:* Spesify the searchable field list.
+  - *model:* Stipulate the model which will be shown, **it is mandatory**.
+  - *list_display:* Stipulate the field list to show of this model.
+  - *search_fields:* Stipulate the searchable field list.
 
 **Example**
 
@@ -52,7 +52,7 @@ urlpatterns = [
 [{"field1": "value1", "field2":"value2", "field3":"value3"}, ...]
 ```
 
-Also you can use *field__field* instead field name as *list_display* as *search_fiels*.
+Also you can use *field__field* instead field name as *list_display* as for *search_fiels*.
 
 *views.py*
 ```
@@ -68,11 +68,11 @@ class MyModelListView(supra.SupraListView):
 ```
 [{"field1__subfield": "subvalue", "field2":"value2"}, ...]
 ```
-if you don't want to show JSON keys like *field__subfield*, you can use **Rendere** sub class.
+if you don't want to show JSON keys like *field__subfield*, you can use **Rendere** sub class instead.
 
 **Renderer**
 
-Renderer sub class let you use friendlys name for you JSON keys instead *field__subfield*.
+Sub class Renderer  let you use friendly names for you JSON keys instead *field__subfield*.
 
 *views.py*
 ```
@@ -91,3 +91,5 @@ class MyModelListView(supra.SupraListView):
 ```
 [{"friendly": "subvalue", "field2":"value2"}, ...]
 ```
+
+*That's all for now.
