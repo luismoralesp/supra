@@ -93,12 +93,12 @@ class MyModelListView(supra.SupraListView):
 {"num_rows": 1, "object_list": [{"friendly": "subvalue", "field2":"value2"}]}
 ```
 ###SupraFormView###
-It's a class based in the native django FormView class, but modified for use JSON as error list response instead a HTML template.
+It's a class based on the native django FormView class, but modified for use JSON as error list response instead of a HTML template.
 
 **fields**
 - *model:* Espesify the model which will be created and/or edited, **it is mandatory**.
 - *form_class:* Espesify the form class which will create and/or edit the model, **it is mandatory**.
-- *template_name:* Espesify the name/path file for render the form template. it is not mandatory, if you not espasify it supra will use a generic default template.
+- *template_name:* Espesify the name/path file for render the form template. it is not mandatory, if you do not espesify it, supra will use a generic default template.
 - *inlines:* Espesify a **SupraInlineFormView** list for stack in this form.
 **Example**
 
@@ -174,4 +174,4 @@ on error will show a response like
 ```json
 {"field1":["This field is required."], "inlines":[{"inlinefield": "This field is required."}]}
 ```
-That's all for now.
+That's all for now folks.
