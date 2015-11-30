@@ -68,11 +68,8 @@ class MyModelListView(supra.SupraListView):
 ```
 [{"field1__subfield": "subvalue", "field2":"value2"}, ...]
 ```
-<<<<<<< HEAD
+
 if you don't want to show JSON keys like *field__subfield*, you can use **Renderer** sub class.
-=======
-if you don't want to show JSON keys like *field__subfield*, you can use **Rendere** sub class instead.
->>>>>>> origin/master
 
 **Renderer**
 
@@ -95,7 +92,6 @@ class MyModelListView(supra.SupraListView):
 ```
 [{"friendly": "subvalue", "field2":"value2"}, ...]
 ```
-<<<<<<< HEAD
 ###SupraFormView###
 It's a class based in the native django FormView class, but modified for use JSON as error list response instead a HTML template.
 
@@ -174,7 +170,5 @@ class MyModelFormView(supra.SupraFormView):
     <input type="submit" value="Send message" />
 </form>
 ```
-=======
 
-*That's all for now.
->>>>>>> origin/master
+That's all for now.
