@@ -84,6 +84,7 @@ class MyModelListView(supra.SupraListView):
   list_display = ['friendly', 'field2',]
   class Renderer:
     friendly = 'field1__subfield'
+  #end class
 #end class
 ```
 *Result*
