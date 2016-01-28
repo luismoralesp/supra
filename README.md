@@ -1,4 +1,4 @@
-![Logo](https://drive.google.com/open?id=0B4P0WGQG9LrDTmVzaVFtZ01EckU)
+![Logo](https://drive.google.com/uc?export=view&id=0B4P0WGQG9LrDTmVzaVFtZ01EckU)
 # supra
 
 It's an easy JSON service generator, using the native django ListView class as base.
