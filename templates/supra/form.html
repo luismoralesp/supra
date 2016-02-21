@@ -2,8 +2,6 @@
 	{{form.as_p}}
 	{% for fo in inlines %}
     	{{ fo.as_p }}
-    {% empty %}
-    empty
     {% endfor %}
     <input type="submit" value="Send message" />
 </form>
