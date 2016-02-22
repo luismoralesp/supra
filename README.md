@@ -95,6 +95,7 @@ class MyModelListView(supra.SupraListView):
 ```
 
 **Pagination**
+
 You can paginate your service jus using the *paginate_by* attribute like this:
 
 ```python
