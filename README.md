@@ -4,7 +4,7 @@
 It's an easy JSON service generator, using the native django ListView class as base.
 
 ##Install##
-  sudo python setup.py install
+  pip install supra
 
 ##Use##
 
