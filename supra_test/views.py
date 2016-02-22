@@ -15,5 +15,4 @@ class MyModelListView(supra.SupraListView):
 class MyModelFormView(supra.SupraFormView):
     model = models.MyModel
     form_class = forms.MyModelForm
-    template_name = 'MyModelTemplate.html'
 #end class

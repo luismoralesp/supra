@@ -5,6 +5,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import inlineformset_factory, modelformset_factory
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.db.models import Q, F
 import json
 
@@ -193,8 +195,10 @@ class SupraFormView(FormView):
 	def get_form_kwargs(self):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
 		if (self.body or SupraConf.body) and self.request.method in ('POST', 'PUT'):
+			body = self.request.POST.get('body', self.request.body)
+			print body
 			kwargs.update({
-				'data': json.loads(self.request.body)
+				'data': json.loads(body)
 			})
 		#end def
 		return kwargs
@@ -219,6 +223,7 @@ class SupraFormView(FormView):
 		return context
 	#end def
 
+	@method_decorator(csrf_exempt)
 	def post(self, request, *args, **kwargs):
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
