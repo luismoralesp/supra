@@ -61,7 +61,11 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'supra_test.urls'
 
+<<<<<<< HEAD
+WSGI_APPLICATION = 'supra_test.wsgi.application'
+=======
 WSGI_APPLICATION = 'supra.wsgi.application'
+>>>>>>> master
 
 
 # Database
@@ -86,3 +90,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+<<<<<<< HEAD
+
+STATIC_URL = '/static/'
+=======
+>>>>>>> master
