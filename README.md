@@ -206,7 +206,7 @@ on error will show a response like
 ```json
 {"field1":["This field is required."], "inlines":[{"inlinefield": "This field is required."}]}
 ```
-<<<<<<< HEAD
+
 ### Body Request ###
 The *body request* is not enable by default, but you can enable it using the *body* attribute in *SupraListView* class.
 
