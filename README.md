@@ -4,11 +4,10 @@
 It's an easy JSON service generator, using the native django ListView class as base.
 
 ##Install##
-<<<<<<< HEAD
+
+```
   pip install supra
-=======
-  not quite yet, just copy and paste for now.
->>>>>>> master
+```
 
 ##Use##
 
@@ -97,7 +96,6 @@ class MyModelListView(supra.SupraListView):
 ```json
 {"num_rows": 1, "object_list": [{"friendly": "subvalue", "field2":"value2"}]}
 ```
-<<<<<<< HEAD
 
 **Pagination**
 
@@ -125,7 +123,7 @@ You can use the *page* GET parameter to select which page choose, the page range
 ```
 
 =======
->>>>>>> master
+
 ###SupraFormView###
 It's a class based on the native django FormView class, but modified for use JSON as error list response instead of a HTML template.
 
@@ -229,6 +227,4 @@ Also you can use the *SupraConf* class for configure for all like this
 supra.SupraConf.body = True
 ```
 
-=======
->>>>>>> master
 That's all for now folks.
