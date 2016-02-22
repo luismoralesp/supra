@@ -1,32 +1,11 @@
-
-{% load filters %}
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Supra Template Form</title>
-	</head>
-	<body>
-		<header>
-			<h1>Supra Template Form</h1>
-		</header>
-		<section>
-			<form action="" method="post">{% csrf_token %}
-				{{form.as_p}}
-				{% for fo in inlines %}
-			    	{{ fo.as_p }}
-			    {% empty %}
-			    
-			    {% endfor %}
-			    <input type="submit" value="POST" />
-			</form>
-			<form method="post" enctype="json" action="?hola">{% csrf_token %}
-			    <p>
-				    <textarea name="body">
-				    </textarea>
-			    </p>
-			    <input type="submit" value="ROW-POST"/>
-			</form>
-		</section>
-
-	</body>
-</html>
+<form action="" method="post">{% csrf_token %}
+	{{form.as_p}}
+	{% for fo in inlines %}
+		f
+    	{{ fo.as_p }}
+    	t
+    {% empty %}
+    empty
+    {% endfor %}
+    <input type="submit" value="Send message" />
+</form>

@@ -1,5 +1,25 @@
 from django.test import TestCase
+<<<<<<< HEAD
 import views
+=======
+from supra import views as supra
+import models
+import forms
+
+supra.SupraConf.body = True
+
+class MyModelListView(supra.SupraListView):
+	model = models.MyModel
+	list_display = ['field1', 'field2', 'field3']
+	search_fields = ['field1', 'field2']
+#end class
+
+class MyModelFormView(supra.SupraFormView):
+    model = models.MyModel
+    form_class = forms.MyModelForm
+    template_name = 'MyModelTemplate.html'
+#end class
+>>>>>>> master
 
 class SupraTest(TestCase):
 	def test_list_view(self):
@@ -14,7 +34,11 @@ class SupraTest(TestCase):
 			body = '{"field1": "2"}'
 		#end class
 		
+<<<<<<< HEAD
 		view = views.MyModelListView.as_view()
+=======
+		view = MyModelListView.as_view()
+>>>>>>> master
 		requ = view.view_class(kwargs={})
 		print requ.dispatch(request=request())
 		print "************************"
@@ -22,7 +46,11 @@ class SupraTest(TestCase):
 
 	def test_form_view(self):
 		print "**** SupraFormView *****"
+<<<<<<< HEAD
 		view = views.MyModelFormView.as_view()
+=======
+		view = MyModelFormView.as_view()
+>>>>>>> master
 		class request():
 			method = 'POST'
 			POST = {
