@@ -4,6 +4,7 @@ from django.views.generic.edit import FormView, DeleteView
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import inlineformset_factory, modelformset_factory
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.db.models import Q, F
 import json
 
@@ -15,6 +16,7 @@ import json
 """
 class SupraConf:
 	body = False
+	template = False
 #end class
 
 """
@@ -29,7 +31,9 @@ class SupraListView(ListView):
 	kwargs = {}
 	dict_only = False
 	rules = {}
-	body = False
+	template = False
+	template_name = "supra/list.html"
+	request = None
 
 	def __ini__(self, dict_only = False, *args, **kwargs):
 		self.dict_only = dict_only
@@ -38,17 +42,15 @@ class SupraListView(ListView):
 
 	def dispatch(self, request, *args, **kwargs):
 		kwargs = self.get_list_kwargs(request)
+		self.template = request.GET.get('template', SupraConf.template)
+		#self.request = request
 		return super(SupraListView, self).dispatch(request, *args, **kwargs)
 	#end def
 
 	def get_kwargs(self, request):
 		kwargs = {}
 		if request.method in ('GET',):
-			if self.body or SupraConf.body:
-				kwargs = json.loads(request.body)
-			else:
-				kwargs = request.GET
-			#end if
+			kwargs = request.GET
 		#end def
 		return kwargs
 	#end def
@@ -88,8 +90,8 @@ class SupraListView(ListView):
 		return context
 	#end def
 
-	def get_object_list(self):
-		queryset = self.get_queryset()
+	def get_object_list(self, object_list):
+		queryset = object_list
 		if self.list_display:
 			if hasattr(self, 'Renderer'):
 				renderers = dict((key, F(value)) for key, value in self.Renderer.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
@@ -106,7 +108,7 @@ class SupraListView(ListView):
 	def render_to_response(self, context, **response_kwargs):
 		json_dict = {}
 
-		object_list = self.get_object_list()
+		object_list = self.get_object_list(context["object_list"])
 
 		page_obj = context["page_obj"]
 		paginator = context["paginator"]
@@ -122,12 +124,16 @@ class SupraListView(ListView):
 		if paginator:
 			json_dict["count"] = paginator.count
 			json_dict["num_pages"] = paginator.num_pages
-			json_dict["page_range"] = paginator.page_range
+			json_dict["page_range"] = str(paginator.page_range)
 		#end if
 		json_dict["num_rows"] = num_rows
 		json_dict["object_list"] = object_list
 		if self.dict_only:
 			return json_dict
+		#end if
+		if self.template:
+			json_dict['search_fields'] = self.search_fields
+			return render(self.request, self.template_name, json_dict)
 		#end if
 		return HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
 	#end def

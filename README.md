@@ -93,6 +93,31 @@ class MyModelListView(supra.SupraListView):
 ```json
 {"num_rows": 1, "object_list": [{"friendly": "subvalue", "field2":"value2"}]}
 ```
+
+**Pagination**
+You can paginate your service jus using the *paginate_by* attribute like this:
+
+```python
+import supra
+import models
+class MyModelListView(supra.SupraListView):
+  model = models.MyModel
+  list_display = ['friendly', 'field2',]
+  paginate_by = 2
+#end class
+```
+
+You can use the *page* GET parameter to select which page choose, the page range start with 1
+
+```
+/?page=1
+```
+
+*Result*
+```json
+{"count": 5, "num_pages": 3, "object_list": [{"field2": "", "field3": "", "field1": "1"}, {"field2": "", "field3": "", "field1": "2"}], "next": 2, "page_range": "xrange(1, 4)", "num_rows": 2}
+```
+
 ###SupraFormView###
 It's a class based on the native django FormView class, but modified for use JSON as error list response instead of a HTML template.
 
@@ -176,18 +201,9 @@ on error will show a response like
 {"field1":["This field is required."], "inlines":[{"inlinefield": "This field is required."}]}
 ```
 ### Body Request ###
-The *body request* is not enable by default, but you can enable it using the *body* attribute in *SupraListView* and *SupraFormView*.
+The *body request* is not enable by default, but you can enable it using the *body* attribute in *SupraListView* class.
 
 *Example*
-
-```python
-class MyModelListView(supra.SupraListView):
-  model = models.MyModel
-  list_display = ['field1', 'field2', 'field3']
-  search_fields = ['field1', 'field2']
-  body = True
-#end class
-```
 
 ```python
 class MyModelFormView(supra.SupraFormView):
