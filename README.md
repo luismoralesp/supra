@@ -175,4 +175,33 @@ on error will show a response like
 ```json
 {"field1":["This field is required."], "inlines":[{"inlinefield": "This field is required."}]}
 ```
+### Body Request ###
+The *body request* is not enable by default, but you can enable it using the *body* attribute in *SupraListView* and *SupraFormView*.
+
+*Example*
+
+```python
+class MyModelListView(supra.SupraListView):
+  model = models.MyModel
+  list_display = ['field1', 'field2', 'field3']
+  search_fields = ['field1', 'field2']
+  body = True
+#end class
+```
+
+```python
+class MyModelFormView(supra.SupraFormView):
+  model = models.MyModel
+  form_class = forms.MyModelForm
+  template_name = 'MyModelTemplate.html'
+  body = True
+#end class
+```
+
+Also you can use the *SupraConf* class for configure for all like this
+
+```python
+supra.SupraConf.body = True
+```
+
 That's all for now folks.
