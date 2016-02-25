@@ -195,13 +195,14 @@ class SupraFormView(FormView):
 
 	def get_form_kwargs(self):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
-		if 'id' in kwargs['data']:
-			kwargs['instance'] = self.model.objects.filter(pk=kwargs['data']['id']).first()
-			if kwargs['instance'] is None:
-				raise Http404
-			#end if
-		#end if
+
 		if (self.body or SupraConf.body) and self.request.method in ('POST', 'PUT'):
+			if 'id' in kwargs['data']:
+				kwargs['instance'] = self.model.objects.filter(pk=kwargs['data']['id']).first()
+				if kwargs['instance'] is None:
+					raise Http404
+				#end if
+			#end if
 			body = self.request.POST.get('body', self.request.body)
 			print body
 			kwargs.update({

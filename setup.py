@@ -4,7 +4,7 @@ from distutils.core import setup
 # python setup.py sdist upload
 setup(
 	name='supra',
-	version='1.0.4',
+	version='1.0.5',
 	py_modules=['supra.views', 'supra.admin'],
 	url='https://github.com/luismoralesp/supra',
 	author="Luis Miguel Morales Pajaro",
