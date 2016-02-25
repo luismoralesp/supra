@@ -1,10 +1,11 @@
 from distutils.core import setup
 
 # version (shape.function.path)
+# python setup.py sdist upload
 setup(
 	name='supra',
-	version='1.0.1',
-	py_modules=['supra'],
+	version='1.0.4',
+	py_modules=['supra.views', 'supra.admin'],
 	url='https://github.com/luismoralesp/supra',
 	author="Luis Miguel Morales Pajaro",
 	author_email="luismiguel.mopa@gmail.com",

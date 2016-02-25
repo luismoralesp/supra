@@ -4,19 +4,6 @@ import views
 import models
 import forms
 
-supra.SupraConf.body = True
-
-class MyModelListView(supra.SupraListView):
-	model = models.MyModel
-	list_display = ['field1', 'field2', 'field3']
-	search_fields = ['field1', 'field2']
-#end class
-
-class MyModelFormView(supra.SupraFormView):
-    model = models.MyModel
-    form_class = forms.MyModelForm
-    template_name = 'MyModelTemplate.html'
-#end class
 
 class SupraTest(TestCase):
 	def test_list_view(self):
@@ -41,13 +28,34 @@ class SupraTest(TestCase):
 		print "**** SupraFormView *****"
 		view = views.MyModelFormView.as_view()
 		class request():
-			method = 'POST'
+			method = 'PUT'
 			POST = {
 				'field1': 'value1',
 				'field2': 'value2',
-				'field3': 'value3'
+				'field3': 'value2',
 			}
-			body = '{"field1": "value1", "field2": "value2", "field3":"value3"}'
+			#body = '{"field1": "value1", "field2": "value2", "field3":"value3"}'
+			FILES = {}
+		#end class
+		requ = view.view_class(request = request())
+		print requ.post([])
+		print "************************"
+		self.test_list_view()
+	#end def
+
+	def test_form_update_view(self):
+		print "**** SupraFormView *****"
+		self.test_form_view()
+		view = views.MyModelFormView.as_view()
+		class request():
+			method = 'PUT'
+			POST = {
+				'field1': 'edited',
+				'field2': 'edited',
+				'field3': 'edited',
+				'id': 1
+			}
+			#body = '{"field1": "value1", "field2": "value2", "field3":"value3"}'
 			FILES = {}
 		#end class
 		requ = view.view_class(request = request())

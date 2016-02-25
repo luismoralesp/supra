@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db.models import Q, F
+from django.http import Http404
 import json
 
 """
@@ -194,6 +195,12 @@ class SupraFormView(FormView):
 
 	def get_form_kwargs(self):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
+		if 'id' in kwargs['data']:
+			kwargs['instance'] = self.model.objects.filter(pk=kwargs['data']['id']).first()
+			if kwargs['instance'] is None:
+				raise Http404
+			#end if
+		#end if
 		if (self.body or SupraConf.body) and self.request.method in ('POST', 'PUT'):
 			body = self.request.POST.get('body', self.request.body)
 			print body
@@ -201,6 +208,7 @@ class SupraFormView(FormView):
 				'data': json.loads(body)
 			})
 		#end def
+		print kwargs
 		return kwargs
 	#end def
 
