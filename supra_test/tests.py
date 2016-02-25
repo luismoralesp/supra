@@ -63,6 +63,19 @@ class SupraTest(TestCase):
 		print "************************"
 		self.test_list_view()
 	#end def
+
+	def test_form_get_view(self):
+		print "**** SupraFormView *****"
+		self.test_form_view()
+		view = views.MyModelFormView.as_view()
+		class request():
+			method = 'GET'
+		#end class
+		requ = view.view_class(request = request())
+		print requ.get([])
+		print "************************"
+		self.test_list_view()
+	#end def
 #end class
 
 

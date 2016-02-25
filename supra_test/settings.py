@@ -46,7 +46,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'supra',
-    'supra_test'
+    'supra_test',
+    'cuser'
 )
 
 MIDDLEWARE_CLASSES = (

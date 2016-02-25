@@ -197,6 +197,7 @@ class SupraFormView(FormView):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
 
 		if (self.body or SupraConf.body) and self.request.method in ('POST', 'PUT'):
+
 			if 'id' in kwargs['data']:
 				kwargs['instance'] = self.model.objects.filter(pk=kwargs['data']['id']).first()
 				if kwargs['instance'] is None:
