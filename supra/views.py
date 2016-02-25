@@ -45,7 +45,7 @@ class SupraListView(ListView):
 	def dispatch(self, request, *args, **kwargs):
 		kwargs = self.get_list_kwargs(request)
 		self.template = request.GET.get('template', SupraConf.template)
-		#self.request = request
+		self.request = request
 		return super(SupraListView, self).dispatch(request, *args, **kwargs)
 	#end def
 
