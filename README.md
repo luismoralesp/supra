@@ -33,7 +33,7 @@ class MyModel(models.Model):
 ```
 *views.py*
 ```python
-import supra
+from supra import views as supra
 import models
 
 class MyModelListView(supra.SupraListView):
@@ -60,7 +60,7 @@ Also you can use *field__field* instead field name as *list_display* as for *sea
 
 *views.py*
 ```python
-import supra
+from supra import views as supra
 import models
 
 class MyModelListView(supra.SupraListView):
@@ -81,7 +81,7 @@ Sub class Renderer  let you use friendly names for you JSON keys instead *field_
 
 *views.py*
 ```python
-import supra
+from supra import views as supra
 import models
 
 class MyModelListView(supra.SupraListView):
@@ -102,7 +102,7 @@ class MyModelListView(supra.SupraListView):
 You can paginate your service jus using the *paginate_by* attribute like this:
 
 ```python
-import supra
+from supra import views as supra
 import models
 class MyModelListView(supra.SupraListView):
   model = models.MyModel
