@@ -4,11 +4,9 @@
 It's an easy JSON service generator, using the native django ListView class as base.
 
 ##Install##
-<<<<<<< HEAD
+```
   sudo setup.py install
-=======
-  not quite yet, just copy and paste for now.
->>>>>>> master
+```
 
 ##Use##
 

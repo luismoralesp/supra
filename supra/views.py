@@ -4,12 +4,9 @@ from django.views.generic.edit import FormView, DeleteView
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import inlineformset_factory, modelformset_factory
 from django.http import HttpResponse
-<<<<<<< HEAD
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-=======
->>>>>>> master
 from django.db.models import Q, F
 import json
 
@@ -21,10 +18,7 @@ import json
 """
 class SupraConf:
 	body = False
-<<<<<<< HEAD
 	template = False
-=======
->>>>>>> master
 #end class
 
 """
@@ -39,13 +33,9 @@ class SupraListView(ListView):
 	kwargs = {}
 	dict_only = False
 	rules = {}
-<<<<<<< HEAD
 	template = False
 	template_name = "supra/list.html"
 	request = None
-=======
-	body = False
->>>>>>> master
 
 	def __ini__(self, dict_only = False, *args, **kwargs):
 		self.dict_only = dict_only
@@ -54,26 +44,15 @@ class SupraListView(ListView):
 
 	def dispatch(self, request, *args, **kwargs):
 		kwargs = self.get_list_kwargs(request)
-<<<<<<< HEAD
 		self.template = request.GET.get('template', SupraConf.template)
 		#self.request = request
-=======
->>>>>>> master
 		return super(SupraListView, self).dispatch(request, *args, **kwargs)
 	#end def
 
 	def get_kwargs(self, request):
 		kwargs = {}
 		if request.method in ('GET',):
-<<<<<<< HEAD
 			kwargs = request.GET
-=======
-			if self.body or SupraConf.body:
-				kwargs = json.loads(request.body)
-			else:
-				kwargs = request.GET
-			#end if
->>>>>>> master
 		#end def
 		return kwargs
 	#end def
@@ -113,13 +92,8 @@ class SupraListView(ListView):
 		return context
 	#end def
 
-<<<<<<< HEAD
 	def get_object_list(self, object_list):
 		queryset = object_list
-=======
-	def get_object_list(self):
-		queryset = self.get_queryset()
->>>>>>> master
 		if self.list_display:
 			if hasattr(self, 'Renderer'):
 				renderers = dict((key, F(value)) for key, value in self.Renderer.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
@@ -136,11 +110,7 @@ class SupraListView(ListView):
 	def render_to_response(self, context, **response_kwargs):
 		json_dict = {}
 
-<<<<<<< HEAD
 		object_list = self.get_object_list(context["object_list"])
-=======
-		object_list = self.get_object_list()
->>>>>>> master
 
 		page_obj = context["page_obj"]
 		paginator = context["paginator"]
@@ -156,24 +126,17 @@ class SupraListView(ListView):
 		if paginator:
 			json_dict["count"] = paginator.count
 			json_dict["num_pages"] = paginator.num_pages
-<<<<<<< HEAD
 			json_dict["page_range"] = str(paginator.page_range)
-=======
-			json_dict["page_range"] = paginator.page_range
->>>>>>> master
 		#end if
 		json_dict["num_rows"] = num_rows
 		json_dict["object_list"] = object_list
 		if self.dict_only:
 			return json_dict
 		#end if
-<<<<<<< HEAD
 		if self.template:
 			json_dict['search_fields'] = self.search_fields
 			return render(self.request, self.template_name, json_dict)
 		#end if
-=======
->>>>>>> master
 		return HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
 	#end def
 
@@ -232,15 +195,10 @@ class SupraFormView(FormView):
 	def get_form_kwargs(self):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
 		if (self.body or SupraConf.body) and self.request.method in ('POST', 'PUT'):
-<<<<<<< HEAD
 			body = self.request.POST.get('body', self.request.body)
 			print body
 			kwargs.update({
 				'data': json.loads(body)
-=======
-			kwargs.update({
-				'data': json.loads(self.request.body)
->>>>>>> master
 			})
 		#end def
 		return kwargs
@@ -265,10 +223,7 @@ class SupraFormView(FormView):
 		return context
 	#end def
 
-<<<<<<< HEAD
 	@method_decorator(csrf_exempt)
-=======
->>>>>>> master
 	def post(self, request, *args, **kwargs):
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
