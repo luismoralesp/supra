@@ -20,6 +20,15 @@ import json
 class SupraConf:
 	body = False
 	template = False
+
+	ACCECC_CONTROL = {
+		"allow": False,
+		"origin": "*",
+		"credentials": " true",
+		"headers": "accept, content-type",
+		"max_age": "1728000",
+		"methods": "POST, GET, OPTIONS"
+	}
 #end class
 
 """
@@ -31,12 +40,14 @@ class SupraConf:
 class SupraListView(ListView):
 	list_display = None
 	search_fields = []
+	list_filter = []
 	kwargs = {}
 	dict_only = False
 	rules = {}
 	template = False
 	template_name = "supra/list.html"
 	request = None
+	search_key = 'search'
 
 	def __ini__(self, dict_only = False, *args, **kwargs):
 		self.dict_only = dict_only
@@ -60,28 +71,46 @@ class SupraListView(ListView):
 
 	def get_list_kwargs(self, request):
 		kwargs = self.get_kwargs(request)
-		for field in self.search_fields:
+		for field in self.list_filter:
 			if field in kwargs:
 				kwarg = kwargs[field]			
 				self.kwargs[field] = kwarg
 			#end if
 		#end for
+		if self.search_key in kwargs:
+			self.kwargs[self.search_key] = kwargs[self.search_key]
+		#end def
 		return kwargs
 	#end def
 
 	def get_queryset(self):
 		queryset = super(SupraListView, self).get_queryset()
 		q = Q()
-		for column in self.search_fields:
+		print self.kwargs
+		print self.list_filter
+		for column in self.list_filter:
 			if column in self.kwargs:
-				search = self.kwargs[column]
+				print column
+				filter = self.kwargs[column]
 				kwargs = {
-					'{0}__{1}'.format(column, 'icontains'): search, 
+					'{0}__{1}'.format(column, 'icontains'): filter, 
 				}
 				q = Q(q & Q(**kwargs))
 			#end if
 			queryset = queryset.filter(q)
 		#end for
+
+		if self.search_key in self.kwargs:
+			for column in self.search_fields:
+				search = self.kwargs[self.search_key]
+				kwargs = {
+					'{0}__{1}'.format(column, 'icontains'): search, 
+				}
+				q = Q(q | Q(**kwargs))
+				queryset = queryset.filter(q)
+			#end for
+		#end if
+
 		queryset = queryset.filter(**self.rules)
 		return queryset
 	#end def
@@ -138,7 +167,15 @@ class SupraListView(ListView):
 			json_dict['search_fields'] = self.search_fields
 			return render(self.request, self.template_name, json_dict)
 		#end if
-		return HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
+		httpresponse = HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
+		if SupraConf.ACCECC_CONTROL['allow']:
+			httpresponse["Access-Control-Allow-Origin"] = SupraConf.ACCECC_CONTROL['origin'];
+			httpresponse["Access-Control-Allow-Credentials"] = SupraConf.ACCECC_CONTROL['credentials'];
+			httpresponse["Access-Control-Allow-Headers"] = SupraConf.ACCECC_CONTROL['headers'];
+			httpresponse["Access-Control-Max-Age"] = SupraConf.ACCECC_CONTROL['max_age'];
+			httpresponse["Access-Control-Allow-Methods"] = SupraConf.ACCECC_CONTROL['methods'];
+		#end if
+		return httpresponse
 	#end def
 
 #end class
@@ -192,26 +229,41 @@ class SupraFormView(FormView):
 	validated_inilines = []
 	invalided_inilines = []
 	body = False
+	http_kwargs = {}
+	initial_pk= None
+
+	def dispatch(self, request, *args, **kwargs):
+		self.http_kwargs = kwargs
+		return super(SupraFormView, self).dispatch(request, *args, **kwargs)
+	#end def
 
 	def get_form_kwargs(self):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
-
+		if 'pk' in self.http_kwargs:
+			self.initial_pk = self.http_kwargs['pk']
+		#end if
 		if (self.body or SupraConf.body) and self.request.method in ('POST', 'PUT'):
-
-			if 'id' in kwargs['data']:
-				kwargs['instance'] = self.model.objects.filter(pk=kwargs['data']['id']).first()
-				if kwargs['instance'] is None:
-					raise Http404
-				#end if
-			#end if
 			body = self.request.POST.get('body', self.request.body)
-			print body
 			kwargs.update({
 				'data': json.loads(body)
 			})
 		#end def
+		kwargs['instance'] = self.get_instance(kwargs)
 		print kwargs
 		return kwargs
+	#end def
+
+	def get_instance(self, kwargs):
+		if self.initial_pk:
+			self.instance = self.model.objects.filter(pk=self.initial_pk).first()
+			if self.instance is None:
+				raise Http404
+			#end if
+			print self.instance
+		#end if
+		#print self.instance, '>>'
+		if hasattr(self,'instance'):
+			return self.instance
 	#end def
 
 	def form_valid(self, form):
@@ -227,8 +279,12 @@ class SupraFormView(FormView):
 		context = super(SupraFormView, self).get_context_data(**kwargs)
 		context['inlines'] = []
 		for inline in self.inlines:
-			form_class = inline().get_form_class()
-			context['inlines'].append(form_class())
+			if hasattr(self, 'instance'):
+				form_class = inline(request=self.request, instance=self.instance).get_form()
+			else:
+				form_class = inline().get_form_class()
+			#end if
+			context['inlines'].append(form_class)
 		#end for
 		return context
 	#end def
@@ -273,15 +329,26 @@ class SupraFormView(FormView):
 
 class SupraInlineFormView(SupraFormView):
 	base_model = None
-	inline_model = None
+	model = None
 	formset_class = None
 	form_class = None
-	
+	instance = None
+
+	def get_instance(self, kwargs):
+		if self.initial_pk:
+			self.instance = self.base_model.objects.filter(pk=self.initial_pk).first()
+			if self.instance is None:
+				raise Http404
+			#end if
+		#end if
+		return self.instance
+	#end def
+
 	def get_form_class(self):
 		if self.formset_class and self.form_class:
-			return inlineformset_factory(self.base_model, self.inline_model, form=self.form_class, formset=self.formset_class, exclude=[], extra=2)
+			return inlineformset_factory(self.base_model, self.model, form=self.form_class, formset=self.formset_class, exclude=[], extra=2, instance=None)
 		else:
-			return inlineformset_factory(self.base_model, self.inline_model, exclude=[])
+			return inlineformset_factory(self.base_model, self.model, exclude=[])
 		#end if
 	#end def
 #end class
