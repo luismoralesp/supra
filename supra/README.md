@@ -70,7 +70,7 @@ urlpatterns = [
 {"num_rows": 1, "object_list": [{"field1": "value1", "field2":"value2", "field3":"value3"}]}
 ```
 
-for change de default param to use in single param query, you can use *search_key*.
+for change the search param's name you can use *search_key*.
 
 *views.py*
 ```python
