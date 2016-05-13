@@ -8,8 +8,8 @@ supra.SupraConf.template = False
 class MyModelListView(supra.SupraListView):
 	model = models.MyModel
 	list_display = ['field1', 'field2', 'field3', 'id']
-	search_fields = ['field1', 'field2']
-	paginate_by = 2
+	list_filter  = ['field1', 'field2']
+	paginate_by  = 2
 #end class
 
 class MyModelFormView(supra.SupraFormView):

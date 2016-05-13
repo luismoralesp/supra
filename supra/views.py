@@ -86,20 +86,16 @@ class SupraListView(ListView):
 	def get_queryset(self):
 		queryset = super(SupraListView, self).get_queryset()
 		q = Q()
-		print self.kwargs
-		print self.list_filter
 		for column in self.list_filter:
 			if column in self.kwargs:
-				print column
 				filter = self.kwargs[column]
 				kwargs = {
-					'{0}__{1}'.format(column, 'icontains'): filter, 
+					column: filter,
 				}
 				q = Q(q & Q(**kwargs))
 			#end if
 			queryset = queryset.filter(q)
 		#end for
-
 		if self.search_key in self.kwargs:
 			for column in self.search_fields:
 				search = self.kwargs[self.search_key]
@@ -110,7 +106,7 @@ class SupraListView(ListView):
 				queryset = queryset.filter(q)
 			#end for
 		#end if
-
+		print queryset.query
 		queryset = queryset.filter(**self.rules)
 		return queryset
 	#end def
