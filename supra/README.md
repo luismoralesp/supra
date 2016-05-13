@@ -106,7 +106,6 @@ class MyModelListView(supra.SupraListView):
 {"num_rows": 1, "object_list": [{"field1__subfield": "subvalue", "field2":"value2"}]}
 ```
 
-
 if you don't want to show JSON keys like *field__subfield*, you can use **Renderer** sub class.
 
 **Renderer**

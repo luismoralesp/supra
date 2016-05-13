@@ -17,7 +17,8 @@ It's a simple paginater JSON service. It shows a searchable list of registers pa
 **Fields**
   - *model:* Stipulate the model which will be shown, **it is mandatory**.
   - *list_display:* Stipulate the field list to show of this model.
-  - *search_fields:* Stipulate the searchable field list.
+  - *list_filter:* Stipulate the searchable field list for multiples params.
+  - *search_fields:* Stipulate the searchable field list form single param.
 
 **Example**
 
@@ -33,13 +34,14 @@ class MyModel(models.Model):
 ```
 *views.py*
 ```python
-from supra import views as supra
+import supra
 import models
 
 class MyModelListView(supra.SupraListView):
   model = models.MyModel
   list_display = ['field1', 'field2', 'field3']
   search_fields = ['field1', 'field2']
+  list_filter = ['field1', 'field2']
 #end class
 ```
 *urls.py*
@@ -50,17 +52,49 @@ import views
 urlpatterns = [
   url(r'mymodel/list/', views.MyModelListView.as_view(), name="mymodel_list"),
 ]
+
+*Query for multiple params*
+```
+/?field1=1
+```
+*Query for single param*
+```
+/?search=1
+```
+
 ```
 *Result*
 ```json
 {"num_rows": 1, "object_list": [{"field1": "value1", "field2":"value2", "field3":"value3"}]}
 ```
 
-Also you can use *field__field* instead field name as *list_display* as for *search_fiels*.
+for change de default param to use in single param query, you can use *search_key*.
+
+```
+*views.py*
+```python
+import supra
+import models
+
+class MyModelListView(supra.SupraListView):
+  model = models.MyModel
+  search_key = 'q'
+  list_display = ['field1', 'field2', 'field3']
+  search_fields = ['field1', 'field2']
+  list_filter = ['field1', 'field2']
+#end class
+```
+
+*Query for single param*
+```
+/?q=1
+```
+
+Also you can use *field__field* instead field name as *list_display* as for *search_fiels* and *list_filter*.
 
 *views.py*
 ```python
-from supra import views as supra
+import supra
 import models
 
 class MyModelListView(supra.SupraListView):
