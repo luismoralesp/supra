@@ -53,16 +53,18 @@ urlpatterns = [
   url(r'mymodel/list/', views.MyModelListView.as_view(), name="mymodel_list"),
 ]
 
+```
+
 *Query for multiple params*
 ```
 /?field1=1
 ```
+
 *Query for single param*
 ```
 /?search=1
 ```
 
-```
 *Result*
 ```json
 {"num_rows": 1, "object_list": [{"field1": "value1", "field2":"value2", "field3":"value3"}]}
@@ -70,7 +72,6 @@ urlpatterns = [
 
 for change de default param to use in single param query, you can use *search_key*.
 
-```
 *views.py*
 ```python
 import supra
