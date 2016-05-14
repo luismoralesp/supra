@@ -10,8 +10,9 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q, F
 from django.http import Http404
 from django.conf.urls import patterns, include, url
-import json
+import sys, inspect
 from django import forms
+import json
 
 """
 	@name: SupraConf
@@ -50,6 +51,12 @@ class SupraListView(ListView):
 	template_name = "supra/list.html"
 	request = None
 	search_key = 'search'
+
+	@classmethod
+	def as_url(cls):
+		app = cls.model.__name__.lower()
+		return url('%s/list/$' % (app, ), cls.as_view(),)
+	#end class
 
 	def __ini__(self, dict_only = False, *args, **kwargs):
 		self.dict_only = dict_only
@@ -181,16 +188,26 @@ class SupraListView(ListView):
 class SupraDetailView(DetailView):
 	fields = None
 	extra_fields = {}
+
+	@classmethod
+	def as_url(cls):
+		app = cls.model.__name__.lower()
+		return url('%s/(?P<pk>\d+)/$' % (app, ), cls.as_view(), )
+	#end class
+
 	def dispatch(self, request, *args, **kwargs):
-		renderers = dict((key, value) for key, value in self.Renderer.__dict__.iteritems() if not key.startswith('__'))
-		for renderer in renderers:
-			listv = renderers[renderer](dict_only=True)
-			ref = self.get_reference(listv)
-			if ref:
-				pk = kwargs['pk']
-				listv.rules[ref.name] = pk
-				self.extra_fields[renderer] = listv.dispatch(request, *args, **kwargs)
-			#end def
+		if hasattr(self, 'Renderer'):
+			renderers = dict((key, value) for key, value in self.Renderer.__dict__.iteritems() if not key.startswith('__'))
+			for renderer in renderers:
+				listv = renderers[renderer](dict_only=True)
+				ref = self.get_reference(listv)
+				if ref:
+					pk = kwargs['pk']
+					listv.rules[ref.name] = pk
+					self.extra_fields[renderer] = listv.dispatch(request, *args, **kwargs)
+				#end def
+			#end for
+		#end if
 		return super(SupraDetailView, self).dispatch(request) 
 	#end def
 
@@ -229,6 +246,16 @@ class SupraFormView(FormView):
 	body = False
 	http_kwargs = {}
 	initial_pk= None
+
+	@classmethod
+	def as_url(cls):
+		app = cls.model.__name__.lower()
+		urlpatterns = [
+			url('%s/form/(?P<pk>\d+)/$' % (app, ), cls.as_view()),
+			url('%s/form/$' % (app, ), cls.as_view()),
+		]
+		return url('', include(urlpatterns))
+	#end class
 
 	def dispatch(self, request, *args, **kwargs):
 		self.http_kwargs = kwargs
@@ -346,6 +373,7 @@ class SupraInlineFormView(SupraFormView):
 	formset_class = None
 	form_class = None
 	instance = None
+	no_auto_add = True
 
 	def get_base_model(self):
 		return self.base_model
@@ -373,6 +401,12 @@ class SupraInlineFormView(SupraFormView):
 class SupraDeleteView(DeleteView):
 	template_name = "supra/delete.html"
 
+	@classmethod
+	def as_url(cls):
+		app = cls.model.__name__.lower()
+		return url('%s/delete/(?P<pk>\d+)/$' % (app, ), cls.as_view())
+	#end class
+
 	def delete(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self.object.delete()
@@ -395,7 +429,6 @@ class SupraCRUD():
 
 	@classmethod
 	def as_view(cls):
-		app = cls.model.__name__.lower()
 
 		for auto in cls.auto_inlines:
 			class SupraDefaultInlineFormView(SupraInlineFormView):
@@ -422,14 +455,38 @@ class SupraCRUD():
 		class Delete(SupraDeleteView):
 			model = cls.model
 		#end class
+		class Detail(SupraDetailView):
+			model = cls.model
+		#end class
+		app = cls.model.__name__.lower()
 		urlpatterns = [
-			url('%s/list/$' % (app, ), List.as_view(), ''),
-			url('%s/form/$' % (app, ), Form.as_view(), ''),
-			url('%s/form/(?P<pk>\d+)/$' % (app, ), Form.as_view(), ''),
-			url('%s/delete/(?P<pk>\d+)/$' % (app, ), Delete.as_view(), ''),
+			Detail.as_url(),
+			List.as_url(),
+			Form.as_url(),
+			Delete.as_url(),
 		]
-		return urlpatterns
+		return include(urlpatterns)
 		
 	#end class
 
+	@classmethod
+	def as_url(cls):
+		return url('', cls.as_view())
+	#end class
+
 #end class
+
+def all_supras(view):
+	def is_for_supra(obj):
+		if inspect.isclass(obj):
+			return not hasattr(obj, 'no_auto_add')
+		#end if
+		return False
+	#end def
+	supras = inspect.getmembers(sys.modules[view.__name__], is_for_supra)
+	urls = []
+	for name, supra in supras:
+		urls.append(supra.as_url())
+	#end for
+	return urls
+#end def

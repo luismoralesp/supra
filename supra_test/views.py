@@ -2,9 +2,10 @@ from supra import views as supra
 import models
 import forms
 
+
 supra.SupraConf.body = False
 supra.SupraConf.template = False
-
+"""
 class MyInlineModelListView(supra.SupraListView):
 	model = models.MyInlineModel
 	list_display = ['field1', 'field2', 'field3', 'id', 'friendly']
@@ -32,7 +33,7 @@ class MyModelListView(supra.SupraListView):
 class MyModelFormView(supra.SupraFormView):
 	model = models.MyModel
 #end class
-
+"""
 class MyModelCRUD(supra.SupraCRUD):
 	model = models.MyModel
 	#inlines = [MyInlineFormView]
