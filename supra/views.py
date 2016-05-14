@@ -9,7 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db.models import Q, F
 from django.http import Http404
+from django.conf.urls import patterns, include, url
 import json
+from django import forms
 
 """
 	@name: SupraConf
@@ -233,6 +235,19 @@ class SupraFormView(FormView):
 		return super(SupraFormView, self).dispatch(request, *args, **kwargs)
 	#end def
 
+	def get_form_class(self):
+		if not self.form_class:
+			class SupraDefaultFromClass(forms.ModelForm):
+				class Meta:
+					model = self.model
+					exclude = []
+				#end class
+			#end class
+			self.form_class = SupraDefaultFromClass
+		#end if
+		return self.form_class
+	#end def
+
 	def get_form_kwargs(self):
 		kwargs = super(SupraFormView, self).get_form_kwargs()
 		if 'pk' in self.http_kwargs:
@@ -245,7 +260,6 @@ class SupraFormView(FormView):
 			})
 		#end def
 		kwargs['instance'] = self.get_instance(kwargs)
-		print kwargs
 		return kwargs
 	#end def
 
@@ -255,11 +269,11 @@ class SupraFormView(FormView):
 			if self.instance is None:
 				raise Http404
 			#end if
-			print self.instance
 		#end if
-		#print self.instance, '>>'
 		if hasattr(self,'instance'):
 			return self.instance
+		#end if
+		return None
 	#end def
 
 	def form_valid(self, form):
@@ -275,6 +289,9 @@ class SupraFormView(FormView):
 		context = super(SupraFormView, self).get_context_data(**kwargs)
 		context['inlines'] = []
 		for inline in self.inlines:
+			if not inline.base_model:
+				inline.base_model = self.model
+			#end if
 			if hasattr(self, 'instance'):
 				form_class = inline(request=self.request, instance=self.instance).get_form()
 			else:
@@ -330,9 +347,13 @@ class SupraInlineFormView(SupraFormView):
 	form_class = None
 	instance = None
 
+	def get_base_model(self):
+		return self.base_model
+	#end class
+
 	def get_instance(self, kwargs):
 		if self.initial_pk:
-			self.instance = self.base_model.objects.filter(pk=self.initial_pk).first()
+			self.instance = self.get_base_model().objects.filter(pk=self.initial_pk).first()
 			if self.instance is None:
 				raise Http404
 			#end if
@@ -342,9 +363,9 @@ class SupraInlineFormView(SupraFormView):
 
 	def get_form_class(self):
 		if self.formset_class and self.form_class:
-			return inlineformset_factory(self.base_model, self.model, form=self.form_class, formset=self.formset_class, exclude=[], extra=2, instance=None)
+			return inlineformset_factory(self.get_base_model(), self.model, form=self.form_class, formset=self.formset_class, exclude=[], extra=2, instance=None)
 		else:
-			return inlineformset_factory(self.base_model, self.model, exclude=[])
+			return inlineformset_factory(self.get_base_model(), self.model, exclude=[])
 		#end if
 	#end def
 #end class
@@ -357,5 +378,58 @@ class SupraDeleteView(DeleteView):
 		self.object.delete()
 		return HttpResponse(status=200)
 	#end def
+
+#end class
+
+class SupraCRUD():
+	model = None
+
+	list_display = None
+	list_filter = []
+	search_fields = None
+	search_key = None
+	form_class = None
+
+	inlines = []
+	auto_inlines = []
+
+	@classmethod
+	def as_view(cls):
+		app = cls.model.__name__.lower()
+
+		for auto in cls.auto_inlines:
+			class SupraDefaultInlineFormView(SupraInlineFormView):
+				model = auto
+				base_model = cls.model
+			#end class
+			cls.inlines.append(SupraDefaultInlineFormView)
+		#end class
+
+		class List(SupraListView):
+			model = cls.model
+
+			list_display = cls.list_display
+			list_filter = cls.list_filter
+			search_fields = cls.search_fields
+			search_key = cls.search_key
+		#end class
+		class Form(SupraFormView):
+			model = cls.model
+
+			form_class = cls.form_class
+			inlines = cls.inlines
+		#end class
+		class Delete(SupraDeleteView):
+			model = cls.model
+		#end class
+		urlpatterns = [
+			url('%s/list/$' % (app, ), List.as_view(), ''),
+			url('%s/form/$' % (app, ), Form.as_view(), ''),
+			url('%s/form/(?P<pk>\d+)/$' % (app, ), Form.as_view(), ''),
+			url('%s/delete/(?P<pk>\d+)/$' % (app, ), Delete.as_view(), ''),
+		]
+		return urlpatterns
+		
+	#end class
 
 #end class
