@@ -262,7 +262,7 @@ Also you can use the *SupraConf* class for configure for all like this
 supra.SupraConf.body = True
 ```
 
-##SupraSessionw##
+##SupraSession##
 let us create a easy Django login.
 
 **Example**
