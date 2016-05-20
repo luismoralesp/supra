@@ -262,4 +262,36 @@ Also you can use the *SupraConf* class for configure for all like this
 supra.SupraConf.body = True
 ```
 
+##SupraSessionw##
+let us create a easy Django login.
+
+**Example**
+
+*views.py*
+```python
+class MySupraSession(supra.SupraSession):
+    pass
+#end class
+```
+
+*urls.py*
+```python
+urlpatterns = [
+	url(r'session/', supra.SupraSession.as_view()),
+]
+```
+
+now you can login sending a POST request to the 'session/' url and logout senfing a DELETE request to the same url.
+
+Also if want to validate one soesific user type you can use the model attribute for spesify wich user can be login with this url, liki this:
+
+*views.py*
+```python
+class MySupraSession(supra.SupraSession):
+    model = models.MyUser
+#end class
+```
+
+then only the MyUser users can login with that url.
 That's all for now folks.
+
