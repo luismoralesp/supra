@@ -1,0 +1,13 @@
+{
+	{% if page_obj.has_previous %}
+	"previous": {{ page_obj.previous_page_number }},
+	{% endif %}
+	{% if page_obj.has_next %}
+	"next": {{ page_obj.next_page_number }},
+	{% endif %}
+	"count": "{{paginator.count}}",
+	"num_pages": "{{paginator.num_pages}}",
+	"page_range": "{{paginator.page_range}}",
+	"num_rows": "{{num_rows}}",
+	"object_list": {{object_list}}
+}

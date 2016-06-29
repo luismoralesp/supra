@@ -1,0 +1,45 @@
+{% load filters %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Supra Template List</title>
+	</head>
+	<body>
+		<header>
+			<h1>Supra Template List</h1>
+		</header>
+		<section>
+			<code>
+			{% for obj in object_list%}
+				<details>
+				  <summary>{{obj|strip}}</summary>
+				  <p>{</p>
+				  <ul>
+				  	{%for k,v in obj.items%}
+				  		<p>
+				  			"{{k}}":
+				  			{%if v|get_type == 'unicode' %}"{% endif %}{{v}}{%if v|get_type in 'unicode' %}"{% endif %}
+
+				  		</p>
+				  	{% endfor %}
+				  </ul>
+				  <p>}</p>
+				</details>
+
+			{% endfor %}
+			</code>
+		</section>
+		<section>
+			<form>
+				{% for field in search_fields%}
+				<p>
+					<label>{{field}}</label>
+					<input name="{{field}}">
+				</p>
+				{% endfor %}
+				<button>GET</button>
+			</form>
+		</section>
+
+	</body>
+</html>

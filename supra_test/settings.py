@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'supra',
     'supra_test',
+    'supra.auths.oauth',
     'cuser'
 )
 

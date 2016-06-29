@@ -4,17 +4,18 @@ from django.conf.urls import patterns, include, url
 from supra import views as supra
 from django.views.generic.base import TemplateView
 import views
+from django.contrib.admin import site
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-def some_view(request):
-	return render_to_response('websocket.html', {}, context_instance=RequestContext(request))
-#end def
 
 urlpatterns = [
-	url(r'', include(supra.all_supras(views))),
-	url(r'ws/', some_view)#TemplateView.as_view(template_name='websocket.html'))
+
+    url(r'^admin/', site.urls),
+	url(r'reporte/list/$', views.ReporteView.as_view()),
+	url(r'reporte/form/(?P<pk>\d+)/', views.ReporteFormView.as_view()),
+	url(r'oauth/', TemplateView.as_view(template_name='oath.html'))
 ]
 
 
