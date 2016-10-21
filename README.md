@@ -9,6 +9,10 @@ It's an easy JSON service generator, using the native django ListView class as b
   pip install supra
 ```
 
+##Documentation##
+
+http://supra.readthedocs.io/
+
 ##Use##
 
 ###SupraListView###
@@ -294,4 +298,3 @@ class MySupraSession(supra.SupraSession):
 
 then only the MyUser users can login with that url.
 That's all for now folks.
-
