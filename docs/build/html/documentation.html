@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Documentation &mdash; Supra 1.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Supra 1.0 documentation" href="index.html"/>
+        <link rel="next" title="Licence" href="licence.html"/>
+        <link rel="prev" title="Getting Started" href="getting_started.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Supra
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#supralistview">SupraListView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supraformview">SupraFormView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#suprainlineformview">SupraInlineFormView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#body-request">Body Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#suprasession">SupraSession</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="licence.html">Licence</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Supra</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/documentation.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="supralistview">
+<h2>SupraListView<a class="headerlink" href="#supralistview" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s a simple paginater JSON service. It shows a searchable list of registers paginated by an indicated number.</p>
+<p><strong>Fields</strong></p>
+<ul class="simple">
+<li><em>model:</em> Stipulate the model which will be shown, <strong>it is mandatory</strong>.</li>
+<li><em>list_display:</em> Stipulate the field list to show of this model.</li>
+<li><em>list_filter:</em> Stipulate the searchable field list for multiples params.</li>
+<li><em>search_fields:</em> Stipulate the searchable field list form single param.</li>
+</ul>
+<p><strong>Example</strong></p>
+<p><code class="docutils literal"><span class="pre">models.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+  <span class="n">field1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+  <span class="n">field2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+  <span class="n">field3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">supra</span>
+<span class="kn">import</span> <span class="nn">models</span>
+
+<span class="k">class</span> <span class="nc">MyModelListView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraListView</span><span class="p">):</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+  <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">,</span> <span class="s1">&#39;field3&#39;</span><span class="p">]</span>
+  <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">]</span>
+  <span class="n">list_filter</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">urls.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="k">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">import</span> <span class="nn">views</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="n">url</span><span class="p">(</span><span class="s1">r&#39;mymodel/list/&#39;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">MyModelListView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mymodel_list&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Query for multiple params.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>/?field1=1
+</pre></div>
+</div>
+<p>Query for single param.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>/?search=1
+</pre></div>
+</div>
+<p>Result.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;num_rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;object_list&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;field1&quot;</span><span class="p">:</span> <span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;field2&quot;</span><span class="p">:</span><span class="s2">&quot;value2&quot;</span><span class="p">,</span> <span class="s2">&quot;field3&quot;</span><span class="p">:</span><span class="s2">&quot;value3&quot;</span><span class="p">}]}</span>
+</pre></div>
+</div>
+<p><em>For change the search param&#8217;s name you can use search_key.</em></p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">supra</span>
+<span class="kn">import</span> <span class="nn">models</span>
+
+<span class="k">class</span> <span class="nc">MyModelListView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraListView</span><span class="p">):</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+  <span class="n">search_key</span> <span class="o">=</span> <span class="s1">&#39;q&#39;</span>
+  <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">,</span> <span class="s1">&#39;field3&#39;</span><span class="p">]</span>
+  <span class="n">search_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">]</span>
+  <span class="n">list_filter</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Query for single param.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">q</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>Also you can use <em>field__field</em> instead field name as <em>list_display</em> as for <em>search_fiels</em> and <em>list_filter</em>.</p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">supra</span>
+<span class="kn">import</span> <span class="nn">models</span>
+
+<span class="k">class</span> <span class="nc">MyModelListView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraListView</span><span class="p">):</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+  <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;field1__subfield&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">,]</span>
+</pre></div>
+</div>
+<p>Result.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;num_rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;object_list&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;field1__subfield&quot;</span><span class="p">:</span> <span class="s2">&quot;subvalue&quot;</span><span class="p">,</span> <span class="s2">&quot;field2&quot;</span><span class="p">:</span><span class="s2">&quot;value2&quot;</span><span class="p">}]}</span>
+</pre></div>
+</div>
+<p>If you don&#8217;t want to show JSON keys like <em>field__subfield</em>, you can use <strong>Renderer</strong> sub class.</p>
+<p><strong>Renderer</strong>
+Sub class Renderer  let you use friendly names for you JSON keys instead <em>field__subfield</em>.</p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelListView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraListView</span><span class="p">):</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+  <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;friendly&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">,]</span>
+  <span class="k">class</span> <span class="nc">Renderer</span><span class="p">:</span>
+    <span class="n">friendly</span> <span class="o">=</span> <span class="s1">&#39;field1__subfield&#39;</span>
+</pre></div>
+</div>
+<p>Result.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;num_rows&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;object_list&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;friendly&quot;</span><span class="p">:</span> <span class="s2">&quot;subvalue&quot;</span><span class="p">,</span> <span class="s2">&quot;field2&quot;</span><span class="p">:</span><span class="s2">&quot;value2&quot;</span><span class="p">}]}</span>
+</pre></div>
+</div>
+<p><strong>Pagination</strong></p>
+<p>You can paginate your service jus using the <em>paginate_by</em> attribute like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">supra</span> <span class="k">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">supra</span>
+<span class="kn">import</span> <span class="nn">models</span>
+<span class="k">class</span> <span class="nc">MyModelListView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraListView</span><span class="p">):</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+  <span class="n">list_display</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;friendly&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">,]</span>
+  <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>You can use the <em>page</em> GET parameter to select which page choose, the page range start with 1.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>/?page=1
+</pre></div>
+</div>
+<p>Result.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;num_pages&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;object_list&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;field2&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;field3&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;field1&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;field2&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;field3&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;field1&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">}],</span> <span class="s2">&quot;next&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;page_range&quot;</span><span class="p">:</span> <span class="s2">&quot;xrange(1, 4)&quot;</span><span class="p">,</span> <span class="s2">&quot;num_rows&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="supraformview">
+<h2>SupraFormView<a class="headerlink" href="#supraformview" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s a class based on the native django FormView class, but modified for use JSON as error list response instead of a HTML template.</p>
+<p><strong>Fields</strong></p>
+<ul class="simple">
+<li><em>model:</em> Espesify the model which will be created and/or edited, <strong>it is mandatory</strong>.</li>
+<li><em>form_class:</em> Espesify the form class which will create and/or edit the model, <strong>it is mandatory</strong>.</li>
+<li><em>template_name:</em> Espesify the name/path file for render the form template. it is not mandatory, if you do not espesify it, supra will use a generic default template.</li>
+<li><em>inlines:</em> Espesify a <strong>SupraInlineFormView</strong> list for stack in this form.</li>
+</ul>
+<p><strong>Example</strong></p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelFormView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraFormView</span><span class="p">):</span>
+      <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+      <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">MyModelForm</span>
+      <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;MyModelTemplate.html&#39;</span>
+<span class="c1">#end class</span>
+</pre></div>
+</div>
+<p>MyModelTemplate.html</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">form</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">csrf_token</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{{</span><span class="n">form</span><span class="o">.</span><span class="n">as_p</span><span class="p">}}</span>
+    <span class="o">&lt;</span><span class="nb">input</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send message&quot;</span> <span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>On error will show a response like.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;field1&quot;</span><span class="p">:[</span><span class="s2">&quot;This field is required.&quot;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="suprainlineformview">
+<h2>SupraInlineFormView<a class="headerlink" href="#suprainlineformview" title="Permalink to this headline">¶</a></h2>
+<p><strong>Fields</strong></p>
+<ul class="simple">
+<li><em>base_model:</em> Spesify the base model for attach the set of others models, <strong>it is mandatory</strong>.</li>
+<li><em>inline_model:</em> Spesify the model which will be attached on the base model, <strong>it is mandatory</strong>, also is mandatory that the inline model have a relation(ForeignKey, OneToOneField, ...) directly with the base model.</li>
+<li><em>form_class:</em> Spesify the form class which will be used for create the formset.</li>
+</ul>
+<p><strong>Example</strong></p>
+<p><code class="docutils literal"><span class="pre">models.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.db</span> <span class="k">import</span> <span class="n">models</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+  <span class="n">field1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+  <span class="n">field2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+  <span class="n">field3</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">MyInlineModel</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+  <span class="n">mymodel</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">MyModel</span><span class="p">)</span>
+  <span class="n">inlinefield</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyInlineModelFormView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraInlineFormView</span><span class="p">):</span>
+      <span class="n">base_model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+      <span class="n">inline_model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyInlineModel</span>
+      <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">MyInlineModelForm</span>
+
+<span class="k">class</span> <span class="nc">MyModelFormView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraFormView</span><span class="p">):</span>
+      <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+      <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">MyModelForm</span>
+      <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;MyModelTemplate.html&#39;</span>
+      <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">MyInlineModelFormView</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">MyModelTemplate.html</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">form</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">csrf_token</span> <span class="o">%</span><span class="p">}</span>
+    <span class="p">{{</span><span class="n">form</span><span class="o">.</span><span class="n">as_p</span><span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="k">for</span> <span class="n">fo</span> <span class="ow">in</span> <span class="n">inlines</span> <span class="o">%</span><span class="p">}</span>
+      <span class="p">{{</span> <span class="n">fo</span><span class="o">.</span><span class="n">as_p</span> <span class="p">}}</span>
+    <span class="p">{</span><span class="o">%</span> <span class="n">endfor</span> <span class="o">%</span><span class="p">}</span>
+    <span class="o">&lt;</span><span class="nb">input</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;Send message&quot;</span> <span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>On error will show a response like.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;field1&quot;</span><span class="p">:[</span><span class="s2">&quot;This field is required.&quot;</span><span class="p">],</span> <span class="s2">&quot;inlines&quot;</span><span class="p">:[{</span><span class="s2">&quot;inlinefield&quot;</span><span class="p">:</span> <span class="s2">&quot;This field is required.&quot;</span><span class="p">}]}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="body-request">
+<h2>Body Request<a class="headerlink" href="#body-request" title="Permalink to this headline">¶</a></h2>
+<p>The <em>body request</em> is not enable by default, but you can enable it using the <em>body</em> attribute in <em>SupraListView</em> class.</p>
+<p><em>Example</em></p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelFormView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraFormView</span><span class="p">):</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
+  <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">MyModelForm</span>
+  <span class="n">template_name</span> <span class="o">=</span> <span class="s1">&#39;MyModelTemplate.html&#39;</span>
+  <span class="n">body</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Also you can use the <em>SupraConf</em> class for configure for all like this.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">supra</span><span class="o">.</span><span class="n">SupraConf</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="suprasession">
+<h2>SupraSession<a class="headerlink" href="#suprasession" title="Permalink to this headline">¶</a></h2>
+<p>Let us create a easy Django login.</p>
+<p><strong>Example</strong></p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySupraSession</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraSession</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">urls.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="n">url</span><span class="p">(</span><span class="s1">r&#39;session/&#39;</span><span class="p">,</span> <span class="n">supra</span><span class="o">.</span><span class="n">SupraSession</span><span class="o">.</span><span class="n">as_view</span><span class="p">()),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>Now you can login sending a POST request to the &#8216;session/&#8217; url and logout senfing a DELETE request to the same url.</p>
+<p>Also if want to validate one soesific user type you can use the model attribute for spesify wich user can be login with this url, liki this:</p>
+<p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySupraSession</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraSession</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyUser</span>
+</pre></div>
+</div>
+<p>Then only the MyUser users can login with that url.
+That&#8217;s all for now folks.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="licence.html" class="btn btn-neutral float-right" title="Licence" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="Getting Started" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Mario Barrios.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
