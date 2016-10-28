@@ -292,7 +292,7 @@ Sub class Renderer  let you use friendly names for you JSON keys instead <em>fie
 <p><strong>Fields</strong></p>
 <ul class="simple">
 <li><em>base_model:</em> Spesify the base model for attach the set of others models, <strong>it is mandatory</strong>.</li>
-<li><em>inline_model:</em> Spesify the model which will be attached on the base model, <strong>it is mandatory</strong>, also is mandatory that the inline model have a relation(ForeignKey, OneToOneField, ...) directly with the base model.</li>
+<li><em>model:</em> Spesify the model which will be attached on the base model, <strong>it is mandatory</strong>, also is mandatory that the inline model have a relation(ForeignKey, OneToOneField, ...) directly with the base model.</li>
 <li><em>form_class:</em> Spesify the form class which will be used for create the formset.</li>
 </ul>
 <p><strong>Example</strong></p>
@@ -312,7 +312,7 @@ Sub class Renderer  let you use friendly names for you JSON keys instead <em>fie
 <p><code class="docutils literal"><span class="pre">view.py</span></code> file:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyInlineModelFormView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraInlineFormView</span><span class="p">):</span>
       <span class="n">base_model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyModel</span>
-      <span class="n">inline_model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyInlineModel</span>
+      <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">MyInlineModel</span>
       <span class="n">form_class</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">MyInlineModelForm</span>
 
 <span class="k">class</span> <span class="nc">MyModelFormView</span><span class="p">(</span><span class="n">supra</span><span class="o">.</span><span class="n">SupraFormView</span><span class="p">):</span>

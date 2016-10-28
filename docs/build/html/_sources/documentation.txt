@@ -170,7 +170,7 @@ SupraInlineFormView
 **Fields**
 
 * *base_model:* Spesify the base model for attach the set of others models, **it is mandatory**.
-* *inline_model:* Spesify the model which will be attached on the base model, **it is mandatory**, also is mandatory that the inline model have a relation(ForeignKey, OneToOneField, ...) directly with the base model.
+* *model:* Spesify the model which will be attached on the base model, **it is mandatory**, also is mandatory that the inline model have a relation(ForeignKey, OneToOneField, ...) directly with the base model.
 * *form_class:* Spesify the form class which will be used for create the formset.
 
 **Example**
@@ -194,7 +194,7 @@ SupraInlineFormView
 
   class MyInlineModelFormView(supra.SupraInlineFormView):
   	base_model = models.MyModel
-  	inline_model = models.MyInlineModel
+  	model = models.MyInlineModel
   	form_class = forms.MyInlineModelForm
 
   class MyModelFormView(supra.SupraFormView):
