@@ -1,3 +1,4 @@
+# -​*- coding: utf-8 -*​-
 from django.views.generic import ListView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, DeleteView
@@ -10,11 +11,16 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q, F
 from django.contrib.auth.models import User
 from django.http import Http404, HttpResponseBadRequest
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib.auth import authenticate, login, logout
 from django import forms
 import sys, inspect
+import datetime
+from django.core import serializers
 import json
+from auths import SupraAuthenticationMixin
+from django.db import models
+from django.db.models import fields
 
 """
 	@name: SupraConf
@@ -22,9 +28,12 @@ import json
 	@date: 21/02/2016
 	@licence: creative commons
 """
+
 class SupraConf:
 	body = False
 	template = False
+	date_format = "%d/%m/%Y"
+	datetime_format = "%d/%m/%Y %I:%M%p"
 
 	ACCECC_CONTROL = {
 		"allow": False,
@@ -36,14 +45,13 @@ class SupraConf:
 	}
 #end class
 
-
 """
 	@name: SupraListView
 	@author: exile.sas
 	@date: 13/10/2015
 	@licence: creative commons
 """
-class SupraListView(ListView):
+class SupraListView(ListView, SupraAuthenticationMixin):
 	list_display = None
 	search_fields = []
 	list_filter = []
@@ -54,6 +62,8 @@ class SupraListView(ListView):
 	template_name = "supra/list.html"
 	request = None
 	search_key = 'search'
+	date_format = SupraConf.date_format
+	datetime_format = SupraConf.datetime_format
 
 	@classmethod
 	def as_url(cls):
@@ -67,6 +77,10 @@ class SupraListView(ListView):
 	#end def
 
 	def dispatch(self, request, *args, **kwargs):
+		auth = self.auth(request, *args, **kwargs)
+		if auth:
+			return auth
+		# end if
 		kwargs = self.get_list_kwargs(request)
 		self.template = request.GET.get('template', SupraConf.template)
 		self.request = request
@@ -108,15 +122,20 @@ class SupraListView(ListView):
 			#end if
 			queryset = queryset.filter(q)
 		#end for
+		q = False
 		if self.search_key in self.kwargs:
 			for column in self.search_fields:
 				search = self.kwargs[self.search_key]
 				kwargs = {
 					'{0}__{1}'.format(column, 'icontains'): search, 
 				}
-				q = Q(q | Q(**kwargs))
-				queryset = queryset.filter(q)
+				if q:
+					q = q | Q(**kwargs)
+				else:
+					q = Q(**kwargs)
+				# end if
 			#end for
+			queryset = queryset.filter(q)
 		#end if
 		queryset = queryset.filter(**self.rules)
 		return queryset
@@ -131,18 +150,133 @@ class SupraListView(ListView):
 
 	def get_object_list(self, object_list):
 		queryset = object_list
+		self_list = []
+		list_display = []
 		if self.list_display:
+			for i in range(len(self.list_display)):
+				display = self.list_display[i]
+				if isinstance(display, tuple):
+					if hasattr(self, display[0]):
+						self_list.append(display)
+					else:
+						list_display.append(display)
+					# end if
+				elif hasattr(self, display):
+					self_list.append(display)
+				else:
+					list_display.append(display)
+				# end def
+			# end for
 			if hasattr(self, 'Renderer'):
 				renderers = dict((key, F(value)) for key, value in self.Renderer.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
 				queryset = queryset.annotate(**renderers)
 			#end if
-			queryset = queryset.values(*self.list_display)
-			object_list = list(queryset)
-		else:
-			object_list = list(queryset.values())
 		#end if
-		return object_list
+
+		def extra(dct, obj, row):
+			for slf in self_list:
+				if isinstance(slf, tuple):
+					encode = slf[1]
+					slf = slf[0]
+				else:
+					encode = None
+				# end if
+				attr = getattr(self, slf)
+				if callable(attr):
+					dct[slf] = attr(obj, row)
+				else:
+					dct[slf] = attr
+				# end if
+				if encode == 'json':
+					dct[slf] = json.loads(dct[slf])
+				# end if
+			# end for
+			return dct
+		# end def
+		return self.format_json(queryset, extra, list_display=list_display)
 	#end def
+
+	@classmethod
+	def format_json(cls, queryset, extra=None, time=0, list_display=[]):
+		from django.db.models.query import QuerySet
+		object_list = []
+
+		if isinstance(queryset, QuerySet):
+			list_d = []
+			for lis in list_display:
+				if isinstance(lis, tuple):
+					list_d.append(lis[0])
+				else:
+					list_d.append(lis)
+				# end if
+			# end for
+			rows = queryset.values(*list_d)
+		else:
+			rows = queryset
+		# end if
+		i = 0
+		for row in rows:
+			dct = {}
+			
+			if isinstance(row, dict):
+				if isinstance(queryset[i], dict) and not 'pk' in queryset[i]:
+					pk = queryset[i].pk
+					row['pk'] = pk
+				# end if
+			# end if
+			obj = row
+
+			if list_display == [] or list_display == None:
+				if isinstance(row, dict):
+					list_display = row
+				else:
+					list_display = row.__dict__
+					row = row.__dict__
+				# end if
+			# end if
+
+			for col in list_display:
+				if isinstance(col, tuple):
+					encode = col[1]
+					col = col[0]
+				else:
+					encode = None
+				# end if
+
+				if col != '_state' and col in row:
+					val = row[col]
+				else:
+					val = None
+				# end if
+				if encode == 'json':
+					if isinstance(val, dict) or isinstance(val, list):
+						dct[col] = val
+					else:	
+						dct[col] = json.loads(val)
+					# end if
+				elif isinstance(val, datetime.datetime):
+					dct[col] = val.strftime(cls.datetime_format)
+				elif isinstance(val, datetime.date):
+					dct[col] = val.strftime(cls.date_format)
+				elif isinstance(val, dict) or isinstance(val, list):
+					dct[col] = cls.format_json(val, extra, time=time + 1)
+				elif hasattr(val, 'all'):
+					dct[col] = cls.format_json(val.all(), extra, time=time + 1)
+				elif isinstance(val, models.Model):
+					dct[col] = unicode(val)
+				else:
+					dct[col] = val
+				# end if
+				#setattr(obj, col, dct[col])
+			# end for
+			if extra and callable(extra):
+				dct = extra(dct, queryset[i], row)
+			# end if
+			object_list.append(dct)
+			i = i + 1
+		# end for
+		return object_list
+	# end def
 
 	def render_to_response(self, context, **response_kwargs):
 		json_dict = {}
@@ -174,7 +308,7 @@ class SupraListView(ListView):
 			json_dict['search_fields'] = self.search_fields
 			return render(self.request, self.template_name, json_dict)
 		#end if
-		httpresponse = HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
+		httpresponse = HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder, ensure_ascii=False), content_type="application/json")
 		if SupraConf.ACCECC_CONTROL['allow']:
 			httpresponse["Access-Control-Allow-Origin"] = SupraConf.ACCECC_CONTROL['origin'];
 			httpresponse["Access-Control-Allow-Credentials"] = SupraConf.ACCECC_CONTROL['credentials'];
@@ -187,7 +321,7 @@ class SupraListView(ListView):
 
 #end class
 
-class SupraDetailView(DetailView):
+class SupraDetailView(DetailView, SupraAuthenticationMixin):
 	fields = None
 	extra_fields = {}
 
@@ -198,6 +332,10 @@ class SupraDetailView(DetailView):
 	#end class
 
 	def dispatch(self, request, *args, **kwargs):
+		auth = self.auth(request, *args, **kwargs)
+		if auth:
+			return auth
+		# end if
 		if hasattr(self, 'Renderer'):
 			renderers = dict((key, value) for key, value in self.Renderer.__dict__.iteritems() if not key.startswith('__'))
 			for renderer in renderers:
@@ -236,11 +374,14 @@ class SupraDetailView(DetailView):
 		#end if
 		for extra in self.extra_fields:
 			json_dict[extra] = self.extra_fields[extra]
-		return HttpResponse(json.dumps(json_dict, cls=DjangoJSONEncoder), content_type="application/json")
+		# end for
+		json_dict['pk'] = context["object"].pk
+		json_dict = SupraListView.format_json([json_dict])
+		return HttpResponse(json.dumps(json_dict[0], cls=DjangoJSONEncoder), content_type="application/json")
 	#enddef
 #end class
 
-class SupraFormView(FormView):
+class SupraFormView(FormView, SupraAuthenticationMixin):
 	template_name = "supra/form.html"
 	inlines = []
 	validated_inilines = []
@@ -260,6 +401,10 @@ class SupraFormView(FormView):
 	#end class
 
 	def dispatch(self, request, *args, **kwargs):
+		auth = self.auth(request, *args, **kwargs)
+		if auth:
+			return auth
+		# end if
 		self.http_kwargs = kwargs
 		return super(SupraFormView, self).dispatch(request, *args, **kwargs)
 	#end def
@@ -311,7 +456,8 @@ class SupraFormView(FormView):
 			inline.instance = instance
 			inline.save()
 		#end for
-		return HttpResponse(status=200)
+		json_dict = SupraListView.format_json([instance])
+		return HttpResponse(json.dumps(json_dict[0]), status=200, content_type="application/json")
 	#end def
 
 	def get_context_data(self, **kwargs):
@@ -346,6 +492,7 @@ class SupraFormView(FormView):
 	def is_valid_inlines(self):
 		for inline in self.inlines:
 			i = inline()
+			i.base_model = self.model
 			form_class = i.get_form_class()
 			form = form_class(**self.get_form_kwargs())
 			if not form.is_valid():
@@ -370,9 +517,13 @@ class SupraFormView(FormView):
 #end class
 
 
-class SupraSession(SupraFormView):
+class SupraSession(SupraFormView, SupraAuthenticationMixin):
 	model = User
 	def dispatch(self, request, *args, **kwargs):
+		auth = self.auth(request, *args, **kwargs)
+		if auth:
+			return auth
+		# end if
 		this = self
 		class SupraDefaultFromClass(forms.ModelForm):
 			class Meta:
@@ -385,14 +536,14 @@ class SupraSession(SupraFormView):
 			#end def
 
 			def save(self, commit=True):
-				return this.login(self.cleaned_data)
+				return this.login(request, self.cleaned_data,)
 			#end def
 		#end class
 		self.form_class = SupraDefaultFromClass
 		return super(SupraSession, self).dispatch(request, *args, **kwargs)
 	#end def
 
-	def login(self, cleaned_data):
+	def login(self, request, cleaned_data):
 		user = authenticate(username=cleaned_data['username'], password=cleaned_data['password'])
 		if user is not None:
 			exist_obj = self.model.objects.filter(pk = user.pk).count()
@@ -411,7 +562,7 @@ class SupraSession(SupraFormView):
 #end class
 
 
-class SupraInlineFormView(SupraFormView):
+class SupraInlineFormView(SupraFormView, SupraAuthenticationMixin):
 	base_model = None
 	model = None
 	formset_class = None
@@ -442,7 +593,7 @@ class SupraInlineFormView(SupraFormView):
 	#end def
 #end class
 
-class SupraDeleteView(DeleteView):
+class SupraDeleteView(DeleteView, SupraAuthenticationMixin):
 	template_name = "supra/delete.html"
 
 	@classmethod

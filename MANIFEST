@@ -2,6 +2,7 @@
 setup.py
 supra/__init__.py
 supra/admin.py
+supra/free.py
 supra/sockets.py
 supra/supra.py
 supra/views.py

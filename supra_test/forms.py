@@ -4,5 +4,12 @@ import models
 class MyModelForm(forms.ModelForm):
 	class Meta:
 		model = models.MyModel
-		exclude = []
+		fields = []
 #end class
+
+class ReporteForm(forms.ModelForm):
+	class Meta:
+		model = models.Reporte
+		exclude = []
+	# end def
+# edn def
