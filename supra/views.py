@@ -39,6 +39,7 @@ class SupraConf:
     template = False
     date_format = "%d/%m/%Y"
     datetime_format = "%d/%m/%Y %I:%M%p"
+    time_format = "%I:%M%p"
     content_type = "application/json; charset=utf-8"
 
     ACCECC_CONTROL = {
@@ -54,19 +55,33 @@ class SupraConf:
 
 
 def access_control(old):
-    def new(*args, **kwargs):
-        httpresponse = old(*args, **kwargs)
+    def new(request, *args, **kwargs):
+        httpresponse = old(request, *args, **kwargs)
         if SupraConf.ACCECC_CONTROL['allow'] and isinstance(httpresponse, HttpResponse):
-            httpresponse[
-                "Access-Control-Allow-Origin"] = SupraConf.ACCECC_CONTROL['origin']
-            httpresponse[
-                "Access-Control-Allow-Credentials"] = SupraConf.ACCECC_CONTROL['credentials']
-            httpresponse[
-                "Access-Control-Allow-Headers"] = SupraConf.ACCECC_CONTROL['headers']
-            httpresponse[
-                "Access-Control-Max-Age"] = SupraConf.ACCECC_CONTROL['max_age']
-            httpresponse[
-                "Access-Control-Allow-Methods"] = SupraConf.ACCECC_CONTROL['methods']
+            origin = SupraConf.ACCECC_CONTROL['origin']
+            if not isinstance(request, dict):
+                if 'HTTP_ORIGIN' in request.META:
+                    host = request.META['HTTP_ORIGIN']
+                else:
+                    host = request.META['HTTP_HOST']
+                    if request.is_secure():
+                        host = "https://" + host
+                    else:
+                        host = "http://" + host
+                    # end if
+                # end if
+                print host
+                if origin == '*' or (isinstance(origin, list) and host in origin):
+                    origin = host
+                else:
+                    origin = ""
+                # end if
+            # end if
+            httpresponse["Access-Control-Allow-Origin"] = origin
+            httpresponse["Access-Control-Allow-Credentials"] = SupraConf.ACCECC_CONTROL['credentials']
+            httpresponse["Access-Control-Allow-Headers"] = SupraConf.ACCECC_CONTROL['headers']
+            httpresponse["Access-Control-Max-Age"] = SupraConf.ACCECC_CONTROL['max_age']
+            httpresponse["Access-Control-Allow-Methods"] = SupraConf.ACCECC_CONTROL['methods']
         # end if
         return httpresponse
     # end def
@@ -94,6 +109,7 @@ class SupraListView(ListView, SupraAuthenticationMixin):
     search_key = 'search'
     date_format = SupraConf.date_format
     datetime_format = SupraConf.datetime_format
+    time_format = SupraConf.time_format
 
     @classmethod
     def as_url(cls):
@@ -108,6 +124,7 @@ class SupraListView(ListView, SupraAuthenticationMixin):
 
     @method_decorator(access_control)
     def dispatch(self, request, *args, **kwargs):
+        
         auth = self.auth(request, *args, **kwargs)
         if auth:
             return auth
@@ -210,7 +227,7 @@ class SupraListView(ListView, SupraAuthenticationMixin):
 
         def extra(dct, objlist, index, row):
             obj = list(objlist)[index]
-            print obj.pk, index
+            
             for slf in self_list:
                 if isinstance(slf, tuple):
                     encode = slf[1]
@@ -297,6 +314,8 @@ class SupraListView(ListView, SupraAuthenticationMixin):
                     dct[col] = val.strftime(cls.datetime_format)
                 elif isinstance(val, datetime.date):
                     dct[col] = val.strftime(cls.date_format)
+                elif isinstance(val, datetime.time):
+                    dct[col] = val.strftime(cls.time_format)
                 elif isinstance(val, dict) or isinstance(val, list):
                     dct[col] = cls.format_json(val, extra, time=time + 1)
                 elif hasattr(val, 'all'):

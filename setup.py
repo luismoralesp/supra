@@ -5,7 +5,7 @@ import os
 # python setup.py sdist upload
 setup(
 	name='supra',
-	version='1.1.55',
+	version='1.1.59',
 	packages=['supra', 'supra.templatetags', 'supra.auths', 'supra.auths.oauth'],
 	url='https://github.com/luismoralesp/supra',
 	author="Luis Miguel Morales Pajaro",

@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 supra.SupraConf.body = True
 supra.SupraConf.template = False
 supra.SupraConf.ACCECC_CONTROL["allow"] = True
-supra.SupraConf.ACCECC_CONTROL["origin"] = "http://192.168.1.12:4200"
+supra.SupraConf.ACCECC_CONTROL["origin"] = '*'
 
 #methods.append(oauth.SupraOAuth)
 
