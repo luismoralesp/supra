@@ -45,6 +45,11 @@ import json
 class MyModelDetailView(supra.SupraDetailView):
 	model = models.MyModel
 	template_name = "supra/form.html"
+	list_display = ["field1", "field2", "fola"]
+
+	def fola(self, obj, dic):
+		return "02"
+	# end def
 # end def
 
 class MyModelListView(supra.SupraListView):
@@ -108,6 +113,12 @@ class ReporteView(supra.SupraListView):
 
 class ReporteFormView(supra.SupraFormView):
 	response_json = True
+	list_display = ['foto2', 'foto']
+
+	def foto2(self, cls, dict):
+		return "fff"
+	# end def
+
 	@method_decorator(csrf_exempt)
 	def dispatch(self, request, *args, **kwargs):
 		return super(ReporteFormView, self).dispatch(request, *args, **kwargs)

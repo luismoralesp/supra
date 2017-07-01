@@ -70,7 +70,6 @@ def access_control(old):
                         host = "http://" + host
                     # end if
                 # end if
-                print host
                 if origin == '*' or (isinstance(origin, list) and host in origin):
                     origin = host
                 else:
@@ -199,6 +198,7 @@ class SupraListView(ListView, SupraAuthenticationMixin):
         return context
     # end def
 
+    @staticmethod
     def get_object_list(self, object_list):
         queryset = object_list
         self_list = []
@@ -247,7 +247,7 @@ class SupraListView(ListView, SupraAuthenticationMixin):
             # end for
             return dct
         # end def
-        return self.format_json(queryset, extra, list_display=list_display)
+        return SupraListView.format_json(queryset, extra, list_display=list_display)
     # end def
 
     @classmethod
@@ -352,7 +352,7 @@ class SupraListView(ListView, SupraAuthenticationMixin):
     def render_to_response(self, context, **response_kwargs):
         json_dict = {}
 
-        object_list = self.get_object_list(context["object_list"])
+        object_list = SupraListView.get_object_list(self, context["object_list"])
 
         page_obj = context["page_obj"]
         paginator = context["paginator"]
@@ -451,7 +451,7 @@ class SupraDetailView(DetailView, SupraAuthenticationMixin):
             json_dict[extra] = self.extra_fields[extra]
         # end for
         json_dict['pk'] = context["object"].pk
-        json_dict = SupraListView.format_json([json_dict])
+        json_dict = SupraListView.get_object_list(self, [json_dict])
         if self.dict_only:
             return json_dict[0]
         # end if
@@ -469,6 +469,7 @@ class SupraFormView(FormView, SupraAuthenticationMixin):
     body = False
     http_kwargs = {}
     initial_pk = None
+    list_display = None
 
     @classmethod
     def as_url(cls):
@@ -547,9 +548,17 @@ class SupraFormView(FormView, SupraAuthenticationMixin):
             inline.save()
         # end for
         if self.response_json:
-            json_dict = SupraListView.format_json([instance])
-            json_dict[0]["session_key"] = self.request.session.session_key
-            json_dict[0]["csrf_token"] = get_token(self.request)
+            if self.list_display:
+                json_dict = {}
+                for field in self.list_display:
+                    if hasattr(instance, field):
+                        json_dict[field] = getattr(instance, field)
+                    # end if
+                # end for
+                json_dict['pk'] = instance.pk
+                instance = json_dict
+            # end if
+            json_dict = SupraListView.get_object_list(self, [instance])
             return HttpResponse(json.dumps(json_dict[0]), status=200, content_type=SupraConf.content_type)
         else:
             return HttpResponse(status=200)
@@ -629,7 +638,6 @@ class SupraSession(SupraFormView, SupraAuthenticationMixin):
         this = self
 
         class SupraDefaultFromClass(forms.ModelForm):
-
             class Meta:
                 model = self.model
                 fields = ['username', 'password']
