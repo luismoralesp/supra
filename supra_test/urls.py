@@ -13,7 +13,7 @@ import models
 
 urlpatterns = [
 
-    url(r'^admin/', site.urls),
+    url(r'^', site.urls),
 	url(r'^reporte/list/$', views.ReporteView.as_view()),
 	url(r'^reporte/form/(?P<pk>\d+)/', views.ReporteFormView.as_view()),
 	url(r'^reporte/form/', views.ReporteFormView.as_view()),

@@ -97,7 +97,7 @@ class FotoFormView2(supra.SupraFormView):
 
 class ReporteView(supra.SupraListView):
 	model = models.Reporte
-	list_display = ['nombre', 'mymodel__field1', 'null', ('title', 'json'), 'foto', 'aass']
+	list_display = ['nombre', 'mymodel__field1', 'null', ('title', 'json'), 'foto', 'aass', 'fecha']
 	#search_fields = ['nombre', 'descripcion']
 	search_key = 'q'
 	

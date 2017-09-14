@@ -38,8 +38,8 @@ class SupraConf:
     body = False
     template = False
     date_format = "%d/%m/%Y"
-    datetime_format = "%d/%m/%Y %I:%M%p"
-    time_format = "%I:%M%p"
+    datetime_format = "%d/%m/%Y %I:%M %p"
+    time_format = "%I:%M %p"
     content_type = "application/json; charset=utf-8"
 
     ACCECC_CONTROL = {
