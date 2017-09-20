@@ -252,10 +252,10 @@ class SupraListView(ListView, SupraAuthenticationMixin):
 
     @classmethod
     def format_json(cls, queryset, extra=None, time=0, list_display=[]):
-        from django.db.models.query import QuerySet
+        from django.db.models.query import QuerySet, RawQuerySet
         object_list = []
 
-        if isinstance(queryset, QuerySet):
+        if isinstance(queryset, QuerySet)or isinstance(queryset, RawQuerySet):
             list_d = []
             for lis in list_display:
                 if isinstance(lis, tuple):
